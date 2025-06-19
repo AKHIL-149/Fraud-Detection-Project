@@ -1,0 +1,774 @@
+<!-- Table Component Library -->
+<div class="table-components">
+    <!-- Transaction Data Table -->
+    <div class="table-container" id="transactionTable">
+        <div class="table-header">
+            <h5 class="table-title">Recent Transactions</h5>
+            <div class="table-controls">
+                <div class="input-group input-group-sm">
+                    <input type="text" class="form-control" id="transactionSearch" 
+                           placeholder="Search transactions...">
+                    <button class="btn btn-outline-secondary" id="searchTransactions">
+                        <i class="fas fa-search"></i>
+                    </button>
+                </div>
+                <select class="form-select form-select-sm ms-2" id="transactionFilter">
+                    <option value="all">All Transactions</option>
+                    <option value="fraud">Fraudulent Only</option>
+                    <option value="high_risk">High Risk</option>
+                    <option value="flagged">Flagged</option>
+                </select>
+                <button class="btn btn-sm btn-outline-primary ms-2" id="exportTransactions">
+                    <i class="fas fa-download"></i> Export
+                </button>
+            </div>
+        </div>
+        <div class="table-content">
+            <div class="table-responsive">
+                <table class="table table-hover" id="transactionsDataTable">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>
+                                <input type="checkbox" id="selectAllTransactions" class="form-check-input">
+                            </th>
+                            <th>Transaction ID</th>
+                            <th>Amount</th>
+                            <th>User ID</th>
+                            <th>Merchant</th>
+                            <th>Risk Score</th>
+                            <th>Status</th>
+                            <th>Timestamp</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="transactionsTableBody">
+                        <!-- Transaction rows will be populated here -->
+                    </tbody>
+                </table>
+            </div>
+            <nav class="table-pagination">
+                <ul class="pagination pagination-sm justify-content-center" id="transactionsPagination">
+                    <!-- Pagination will be populated here -->
+                </ul>
+            </nav>
+        </div>
+    </div>
+
+    <!-- Alerts Data Table -->
+    <div class="table-container" id="alertsTable">
+        <div class="table-header">
+            <h5 class="table-title">Active Alerts</h5>
+            <div class="table-controls">
+                <select class="form-select form-select-sm" id="alertsSeverityFilter">
+                    <option value="all">All Severities</option>
+                    <option value="critical">Critical</option>
+                    <option value="high">High</option>
+                    <option value="medium">Medium</option>
+                    <option value="low">Low</option>
+                </select>
+                <select class="form-select form-select-sm ms-2" id="alertsStatusFilter">
+                    <option value="all">All Status</option>
+                    <option value="new">New</option>
+                    <option value="investigating">Investigating</option>
+                    <option value="resolved">Resolved</option>
+                </select>
+                <button class="btn btn-sm btn-outline-danger ms-2" id="bulkResolveAlerts">
+                    <i class="fas fa-check-double"></i> Bulk Resolve
+                </button>
+            </div>
+        </div>
+        <div class="table-content">
+            <div class="table-responsive">
+                <table class="table table-hover" id="alertsDataTable">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>
+                                <input type="checkbox" id="selectAllAlerts" class="form-check-input">
+                            </th>
+                            <th>Alert ID</th>
+                            <th>Severity</th>
+                            <th>Transaction ID</th>
+                            <th>Risk Score</th>
+                            <th>Description</th>
+                            <th>Status</th>
+                            <th>Created</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="alertsTableBody">
+                        <!-- Alert rows will be populated here -->
+                    </tbody>
+                </table>
+            </div>
+            <nav class="table-pagination">
+                <ul class="pagination pagination-sm justify-content-center" id="alertsPagination">
+                    <!-- Pagination will be populated here -->
+                </ul>
+            </nav>
+        </div>
+    </div>
+
+    <!-- Users Data Table -->
+    <div class="table-container" id="usersTable">
+        <div class="table-header">
+            <h5 class="table-title">User Risk Profiles</h5>
+            <div class="table-controls">
+                <select class="form-select form-select-sm" id="usersRiskFilter">
+                    <option value="all">All Risk Levels</option>
+                    <option value="high">High Risk</option>
+                    <option value="medium">Medium Risk</option>
+                    <option value="low">Low Risk</option>
+                </select>
+                <select class="form-select form-select-sm ms-2" id="usersStatusFilter">
+                    <option value="all">All Status</option>
+                    <option value="active">Active</option>
+                    <option value="flagged">Flagged</option>
+                    <option value="suspended">Suspended</option>
+                </select>
+                <button class="btn btn-sm btn-outline-primary ms-2" id="exportUsers">
+                    <i class="fas fa-download"></i> Export
+                </button>
+            </div>
+        </div>
+        <div class="table-content">
+            <div class="table-responsive">
+                <table class="table table-hover" id="usersDataTable">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>User ID</th>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th>Risk Score</th>
+                            <th>Total Transactions</th>
+                            <th>Fraud Count</th>
+                            <th>Status</th>
+                            <th>Last Activity</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="usersTableBody">
+                        <!-- User rows will be populated here -->
+                    </tbody>
+                </table>
+            </div>
+            <nav class="table-pagination">
+                <ul class="pagination pagination-sm justify-content-center" id="usersPagination">
+                    <!-- Pagination will be populated here -->
+                </ul>
+            </nav>
+        </div>
+    </div>
+
+    <!-- Merchants Data Table -->
+    <div class="table-container" id="merchantsTable">
+        <div class="table-header">
+            <h5 class="table-title">Merchant Risk Analysis</h5>
+            <div class="table-controls">
+                <select class="form-select form-select-sm" id="merchantsCategoryFilter">
+                    <option value="all">All Categories</option>
+                    <option value="online">Online</option>
+                    <option value="retail">Retail</option>
+                    <option value="gas">Gas Stations</option>
+                    <option value="restaurant">Restaurants</option>
+                    <option value="grocery">Grocery</option>
+                </select>
+                <select class="form-select form-select-sm ms-2" id="merchantsRiskFilter">
+                    <option value="all">All Risk Levels</option>
+                    <option value="high">High Risk</option>
+                    <option value="medium">Medium Risk</option>
+                    <option value="low">Low Risk</option>
+                </select>
+            </div>
+        </div>
+        <div class="table-content">
+            <div class="table-responsive">
+                <table class="table table-hover" id="merchantsDataTable">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>Merchant ID</th>
+                            <th>Name</th>
+                            <th>Category</th>
+                            <th>Risk Score</th>
+                            <th>Transaction Volume</th>
+                            <th>Fraud Rate</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="merchantsTableBody">
+                        <!-- Merchant rows will be populated here -->
+                    </tbody>
+                </table>
+            </div>
+            <nav class="table-pagination">
+                <ul class="pagination pagination-sm justify-content-center" id="merchantsPagination">
+                    <!-- Pagination will be populated here -->
+                </ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+<script>
+// Table components functionality
+class TableComponents {
+    constructor() {
+        this.tables = {
+            transactions: new DataTable('transactions'),
+            alerts: new DataTable('alerts'),
+            users: new DataTable('users'),
+            merchants: new DataTable('merchants')
+        };
+        
+        this.initialize();
+    }
+
+    initialize() {
+        this.bindEvents();
+        this.loadInitialData();
+    }
+
+    bindEvents() {
+        // Transaction table events
+        document.getElementById('transactionSearch').addEventListener('input', 
+            this.debounce((e) => this.tables.transactions.search(e.target.value), 300));
+        document.getElementById('transactionFilter').addEventListener('change', 
+            (e) => this.tables.transactions.filter('status', e.target.value));
+        document.getElementById('exportTransactions').addEventListener('click', 
+            () => this.exportTable('transactions'));
+        document.getElementById('selectAllTransactions').addEventListener('change', 
+            (e) => this.selectAllRows('transactions', e.target.checked));
+
+        // Alert table events
+        document.getElementById('alertsSeverityFilter').addEventListener('change', 
+            (e) => this.tables.alerts.filter('severity', e.target.value));
+        document.getElementById('alertsStatusFilter').addEventListener('change', 
+            (e) => this.tables.alerts.filter('status', e.target.value));
+        document.getElementById('bulkResolveAlerts').addEventListener('click', 
+            () => this.bulkResolveAlerts());
+        document.getElementById('selectAllAlerts').addEventListener('change', 
+            (e) => this.selectAllRows('alerts', e.target.checked));
+
+        // User table events
+        document.getElementById('usersRiskFilter').addEventListener('change', 
+            (e) => this.tables.users.filter('risk_level', e.target.value));
+        document.getElementById('usersStatusFilter').addEventListener('change', 
+            (e) => this.tables.users.filter('status', e.target.value));
+        document.getElementById('exportUsers').addEventListener('click', 
+            () => this.exportTable('users'));
+
+        // Merchant table events
+        document.getElementById('merchantsCategoryFilter').addEventListener('change', 
+            (e) => this.tables.merchants.filter('category', e.target.value));
+        document.getElementById('merchantsRiskFilter').addEventListener('change', 
+            (e) => this.tables.merchants.filter('risk_level', e.target.value));
+    }
+
+    loadInitialData() {
+        this.tables.transactions.load();
+        this.tables.alerts.load();
+        this.tables.users.load();
+        this.tables.merchants.load();
+    }
+
+    selectAllRows(tableType, checked) {
+        const checkboxes = document.querySelectorAll(`#${tableType}TableBody input[type="checkbox"]`);
+        checkboxes.forEach(checkbox => checkbox.checked = checked);
+    }
+
+    async bulkResolveAlerts() {
+        const selectedAlerts = Array.from(document.querySelectorAll('#alertsTableBody input[type="checkbox"]:checked'))
+            .map(cb => cb.value);
+
+        if (selectedAlerts.length === 0) {
+            alert('Please select alerts to resolve');
+            return;
+        }
+
+        if (!confirm(`Are you sure you want to resolve ${selectedAlerts.length} alerts?`)) {
+            return;
+        }
+
+        try {
+            const response = await fetch('/api/monitoring/alerts/bulk-resolve', {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ alert_ids: selectedAlerts })
+            });
+
+            if (response.ok) {
+                this.tables.alerts.load(); // Refresh alerts table
+                this.showToast('Alerts resolved successfully', 'success');
+            } else {
+                this.showToast('Failed to resolve alerts', 'error');
+            }
+        } catch (error) {
+            console.error('Error resolving alerts:', error);
+            this.showToast('Error resolving alerts', 'error');
+        }
+    }
+
+    async exportTable(tableType) {
+        try {
+            const response = await fetch(`/api/${tableType}/export`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    format: 'csv',
+                    filters: this.tables[tableType].getCurrentFilters()
+                })
+            });
+
+            if (response.ok) {
+                const blob = await response.blob();
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `${tableType}-export-${new Date().toISOString().split('T')[0]}.csv`;
+                a.click();
+                window.URL.revokeObjectURL(url);
+            } else {
+                this.showToast('Failed to export data', 'error');
+            }
+        } catch (error) {
+            console.error('Error exporting data:', error);
+            this.showToast('Error exporting data', 'error');
+        }
+    }
+
+    debounce(func, wait) {
+        let timeout;
+        return function executedFunction(...args) {
+            const later = () => {
+                clearTimeout(timeout);
+                func(...args);
+            };
+            clearTimeout(timeout);
+            timeout = setTimeout(later, wait);
+        };
+    }
+
+    showToast(message, type) {
+        // Implementation would be similar to other toast functions
+        console.log(`${type}: ${message}`);
+    }
+}
+
+// DataTable class for individual table management
+class DataTable {
+    constructor(type) {
+        this.type = type;
+        this.data = [];
+        this.filteredData = [];
+        this.currentPage = 1;
+        this.pageSize = 10;
+        this.filters = {};
+        this.searchTerm = '';
+        this.sortColumn = null;
+        this.sortDirection = 'asc';
+    }
+
+    async load() {
+        try {
+            const response = await fetch(`/api/${this.type}/list?page=${this.currentPage}&size=${this.pageSize}`);
+            const result = await response.json();
+            
+            this.data = result.data;
+            this.totalPages = result.total_pages;
+            this.totalRecords = result.total_records;
+            
+            this.applyFilters();
+            this.render();
+        } catch (error) {
+            console.error(`Error loading ${this.type} data:`, error);
+        }
+    }
+
+    search(term) {
+        this.searchTerm = term.toLowerCase();
+        this.applyFilters();
+        this.render();
+    }
+
+    filter(column, value) {
+        if (value === 'all') {
+            delete this.filters[column];
+        } else {
+            this.filters[column] = value;
+        }
+        this.applyFilters();
+        this.render();
+    }
+
+    sort(column) {
+        if (this.sortColumn === column) {
+            this.sortDirection = this.sortDirection === 'asc' ? 'desc' : 'asc';
+        } else {
+            this.sortColumn = column;
+            this.sortDirection = 'asc';
+        }
+        this.applyFilters();
+        this.render();
+    }
+
+    applyFilters() {
+        let filtered = [...this.data];
+
+        // Apply search filter
+        if (this.searchTerm) {
+            filtered = filtered.filter(item =>
+                Object.values(item).some(value =>
+                    value && value.toString().toLowerCase().includes(this.searchTerm)
+                )
+            );
+        }
+
+        // Apply column filters
+        Object.entries(this.filters).forEach(([column, value]) => {
+            filtered = filtered.filter(item => {
+                if (column === 'risk_level') {
+                    const riskScore = parseFloat(item.risk_score);
+                    switch (value) {
+                        case 'high': return riskScore >= 0.7;
+                        case 'medium': return riskScore >= 0.3 && riskScore < 0.7;
+                        case 'low': return riskScore < 0.3;
+                        default: return true;
+                    }
+                }
+                return item[column] === value;
+            });
+        });
+
+        // Apply sorting
+        if (this.sortColumn) {
+            filtered.sort((a, b) => {
+                const aVal = a[this.sortColumn];
+                const bVal = b[this.sortColumn];
+                
+                let comparison = 0;
+                if (aVal > bVal) comparison = 1;
+                if (aVal < bVal) comparison = -1;
+                
+                return this.sortDirection === 'desc' ? -comparison : comparison;
+            });
+        }
+
+        this.filteredData = filtered;
+    }
+
+    render() {
+        const tbody = document.getElementById(`${this.type}TableBody`);
+        
+        if (this.filteredData.length === 0) {
+            tbody.innerHTML = `
+                <tr>
+                    <td colspan="100%" class="text-center py-4 text-muted">
+                        No ${this.type} found
+                    </td>
+                </tr>
+            `;
+            return;
+        }
+
+        const startIndex = (this.currentPage - 1) * this.pageSize;
+        const endIndex = startIndex + this.pageSize;
+        const pageData = this.filteredData.slice(startIndex, endIndex);
+
+        tbody.innerHTML = pageData.map(item => this.renderRow(item)).join('');
+        this.renderPagination();
+        this.bindRowEvents();
+    }
+
+    renderRow(item) {
+        switch (this.type) {
+            case 'transactions':
+                return this.renderTransactionRow(item);
+            case 'alerts':
+                return this.renderAlertRow(item);
+            case 'users':
+                return this.renderUserRow(item);
+            case 'merchants':
+                return this.renderMerchantRow(item);
+            default:
+                return '';
+        }
+    }
+
+    renderTransactionRow(transaction) {
+        const riskLevel = this.getRiskLevel(transaction.risk_score);
+        const statusBadge = this.getStatusBadge(transaction.status || (transaction.is_fraud ? 'fraud' : 'legitimate'));
+        
+        return `
+            <tr>
+                <td>
+                    <input type="checkbox" class="form-check-input" value="${transaction.id}">
+                </td>
+                <td>
+                    <span class="font-monospace">${transaction.transaction_id}</span>
+                </td>
+                <td>
+                    <strong>$${parseFloat(transaction.amount).toLocaleString()}</strong>
+                </td>
+                <td>${transaction.user_id}</td>
+                <td>
+                    <span class="badge bg-secondary">${transaction.merchant_category}</span>
+                </td>
+                <td>
+                    <div class="risk-score ${riskLevel.toLowerCase()}">
+                        ${(transaction.risk_score * 100).toFixed(1)}%
+                    </div>
+                </td>
+                <td>${statusBadge}</td>
+                <td>
+                    <small>${this.formatDateTime(transaction.timestamp)}</small>
+                </td>
+                <td>
+                    <div class="btn-group btn-group-sm">
+                        <button class="btn btn-outline-primary view-details" data-id="${transaction.id}">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                        <button class="btn btn-outline-warning flag-transaction" data-id="${transaction.id}">
+                            <i class="fas fa-flag"></i>
+                        </button>
+                    </div>
+                </td>
+            </tr>
+        `;
+    }
+
+    renderAlertRow(alert) {
+        const severityBadge = this.getSeverityBadge(alert.severity);
+        const statusBadge = this.getStatusBadge(alert.status);
+        
+        return `
+            <tr>
+                <td>
+                    <input type="checkbox" class="form-check-input" value="${alert.id}">
+                </td>
+                <td>
+                    <span class="font-monospace">${alert.id}</span>
+                </td>
+                <td>${severityBadge}</td>
+                <td>
+                    <span class="font-monospace">${alert.transaction_id}</span>
+                </td>
+                <td>
+                    <div class="risk-score ${this.getRiskLevel(alert.risk_score).toLowerCase()}">
+                        ${(alert.risk_score * 100).toFixed(1)}%
+                    </div>
+                </td>
+                <td>
+                    <div class="text-truncate" style="max-width: 200px;" title="${alert.description}">
+                        ${alert.description}
+                    </div>
+                </td>
+                <td>${statusBadge}</td>
+                <td>
+                    <small>${this.formatDateTime(alert.timestamp)}</small>
+                </td>
+                <td>
+                    <div class="btn-group btn-group-sm">
+                        <button class="btn btn-outline-primary view-alert" data-id="${alert.id}">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                        <button class="btn btn-outline-success resolve-alert" data-id="${alert.id}">
+                            <i class="fas fa-check"></i>
+                        </button>
+                    </div>
+                </td>
+            </tr>
+        `;
+    }
+
+    renderUserRow(user) {
+        const riskLevel = this.getRiskLevel(user.risk_score);
+        const statusBadge = this.getStatusBadge(user.status);
+        
+        return `
+            <tr>
+                <td>
+                    <span class="font-monospace">${user.user_id}</span>
+                </td>
+                <td>${user.name || 'N/A'}</td>
+                <td>${user.email || 'N/A'}</td>
+                <td>
+                    <div class="risk-score ${riskLevel.toLowerCase()}">
+                        ${(user.risk_score * 100).toFixed(1)}%
+                    </div>
+                </td>
+                <td>${user.total_transactions || 0}</td>
+                <td>
+                    <span class="text-danger fw-bold">${user.fraud_count || 0}</span>
+                </td>
+                <td>${statusBadge}</td>
+                <td>
+                    <small>${this.formatDateTime(user.last_activity)}</small>
+                </td>
+                <td>
+                    <div class="btn-group btn-group-sm">
+                        <button class="btn btn-outline-primary view-user" data-id="${user.user_id}">
+                            <i class="fas fa-user"></i>
+                        </button>
+                        <button class="btn btn-outline-warning flag-user" data-id="${user.user_id}">
+                            <i class="fas fa-flag"></i>
+                        </button>
+                    </div>
+                </td>
+            </tr>
+        `;
+    }
+
+    renderMerchantRow(merchant) {
+        const riskLevel = this.getRiskLevel(merchant.risk_score);
+        
+        return `
+            <tr>
+                <td>
+                    <span class="font-monospace">${merchant.merchant_id}</span>
+                </td>
+                <td>${merchant.name}</td>
+                <td>
+                    <span class="badge bg-info">${merchant.category}</span>
+                </td>
+                <td>
+                    <div class="risk-score ${riskLevel.toLowerCase()}">
+                        ${(merchant.risk_score * 100).toFixed(1)}%
+                    </div>
+                </td>
+                <td>${merchant.transaction_volume || 0}</td>
+                <td>
+                    <span class="text-danger">${(merchant.fraud_rate * 100).toFixed(2)}%</span>
+                </td>
+                <td>
+                    ${this.getStatusBadge(merchant.status)}
+                </td>
+                <td>
+                    <div class="btn-group btn-group-sm">
+                        <button class="btn btn-outline-primary view-merchant" data-id="${merchant.merchant_id}">
+                            <i class="fas fa-store"></i>
+                        </button>
+                        <button class="btn btn-outline-secondary analyze-merchant" data-id="${merchant.merchant_id}">
+                            <i class="fas fa-chart-line"></i>
+                        </button>
+                    </div>
+                </td>
+            </tr>
+        `;
+    }
+
+    renderPagination() {
+        const pagination = document.getElementById(`${this.type}Pagination`);
+        const totalPages = Math.ceil(this.filteredData.length / this.pageSize);
+        
+        if (totalPages <= 1) {
+            pagination.innerHTML = '';
+            return;
+        }
+
+        const pages = [];
+        
+        // Previous button
+        pages.push(`
+            <li class="page-item ${this.currentPage === 1 ? 'disabled' : ''}">
+                <a class="page-link" href="#" data-page="${this.currentPage - 1}">Previous</a>
+            </li>
+        `);
+
+        // Page numbers
+        for (let i = 1; i <= totalPages; i++) {
+            if (i === 1 || i === totalPages || Math.abs(i - this.currentPage) <= 2) {
+                pages.push(`
+                    <li class="page-item ${i === this.currentPage ? 'active' : ''}">
+                        <a class="page-link" href="#" data-page="${i}">${i}</a>
+                    </li>
+                `);
+            } else if (Math.abs(i - this.currentPage) === 3) {
+                pages.push('<li class="page-item disabled"><span class="page-link">...</span></li>');
+            }
+        }
+
+        // Next button
+        pages.push(`
+            <li class="page-item ${this.currentPage === totalPages ? 'disabled' : ''}">
+                <a class="page-link" href="#" data-page="${this.currentPage + 1}">Next</a>
+            </li>
+        `);
+
+        pagination.innerHTML = pages.join('');
+
+        // Bind pagination events
+        pagination.querySelectorAll('a.page-link').forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                const page = parseInt(e.target.dataset.page);
+                if (page && page !== this.currentPage) {
+                    this.currentPage = page;
+                    this.render();
+                }
+            });
+        });
+    }
+
+    bindRowEvents() {
+        // Implement row-specific event handlers based on table type
+        // This would include view details, resolve alerts, flag users, etc.
+    }
+
+    getRiskLevel(riskScore) {
+        if (riskScore >= 0.7) return 'HIGH';
+        if (riskScore >= 0.3) return 'MEDIUM';
+        return 'LOW';
+    }
+
+    getStatusBadge(status) {
+        const statusMap = {
+            'legitimate': 'bg-success',
+            'fraud': 'bg-danger',
+            'flagged': 'bg-warning',
+            'new': 'bg-primary',
+            'investigating': 'bg-warning',
+            'resolved': 'bg-success',
+            'active': 'bg-success',
+            'suspended': 'bg-danger'
+        };
+
+        const bgClass = statusMap[status] || 'bg-secondary';
+        return `<span class="badge ${bgClass}">${status.replace('_', ' ').toUpperCase()}</span>`;
+    }
+
+    getSeverityBadge(severity) {
+        const severityMap = {
+            'critical': 'bg-danger',
+            'high': 'bg-warning',
+            'medium': 'bg-info',
+            'low': 'bg-secondary'
+        };
+
+        const bgClass = severityMap[severity] || 'bg-secondary';
+        return `<span class="badge ${bgClass}">${severity.toUpperCase()}</span>`;
+    }
+
+    formatDateTime(timestamp) {
+        if (!timestamp) return 'N/A';
+        return new Date(timestamp).toLocaleString();
+    }
+
+    getCurrentFilters() {
+        return {
+            ...this.filters,
+            search: this.searchTerm,
+            sort_column: this.sortColumn,
+            sort_direction: this.sortDirection
+        };
+    }
+}
+
+// Initialize table components when DOM is loaded
+document.addEventListener('DOMContentLoaded', function() {
+    window.tableComponents = new TableComponents();
+});
+</script>

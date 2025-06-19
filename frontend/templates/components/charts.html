@@ -1,0 +1,493 @@
+<!-- Chart Component Library -->
+<div class="chart-components">
+    <!-- Real-time Fraud Rate Chart -->
+    <div class="chart-container" id="fraudRateChart">
+        <div class="chart-header">
+            <h5 class="chart-title">Real-time Fraud Rate</h5>
+            <div class="chart-controls">
+                <select class="form-select form-select-sm" id="fraudRateTimeframe">
+                    <option value="1h">Last Hour</option>
+                    <option value="6h">Last 6 Hours</option>
+                    <option value="24h" selected>Last 24 Hours</option>
+                    <option value="7d">Last 7 Days</option>
+                </select>
+            </div>
+        </div>
+        <div class="chart-content">
+            <div id="fraudRateChartContainer" style="height: 300px;"></div>
+        </div>
+    </div>
+
+    <!-- Transaction Volume Chart -->
+    <div class="chart-container" id="transactionVolumeChart">
+        <div class="chart-header">
+            <h5 class="chart-title">Transaction Volume</h5>
+            <div class="chart-controls">
+                <div class="btn-group btn-group-sm" role="group">
+                    <input type="radio" class="btn-check" name="volumeType" id="volumeCount" checked>
+                    <label class="btn btn-outline-primary" for="volumeCount">Count</label>
+                    
+                    <input type="radio" class="btn-check" name="volumeType" id="volumeAmount">
+                    <label class="btn btn-outline-primary" for="volumeAmount">Amount</label>
+                </div>
+            </div>
+        </div>
+        <div class="chart-content">
+            <div id="transactionVolumeContainer" style="height: 300px;"></div>
+        </div>
+    </div>
+
+    <!-- Risk Distribution Histogram -->
+    <div class="chart-container" id="riskDistributionChart">
+        <div class="chart-header">
+            <h5 class="chart-title">Risk Score Distribution</h5>
+            <div class="chart-controls">
+                <button class="btn btn-sm btn-outline-secondary" id="refreshRiskDist">
+                    <i class="fas fa-sync-alt"></i> Refresh
+                </button>
+            </div>
+        </div>
+        <div class="chart-content">
+            <div id="riskDistributionContainer" style="height: 300px;"></div>
+        </div>
+    </div>
+
+    <!-- Geographic Heat Map -->
+    <div class="chart-container" id="geographicChart">
+        <div class="chart-header">
+            <h5 class="chart-title">Geographic Fraud Distribution</h5>
+            <div class="chart-controls">
+                <select class="form-select form-select-sm" id="geoMetric">
+                    <option value="count">Fraud Count</option>
+                    <option value="rate">Fraud Rate</option>
+                    <option value="amount">Fraud Amount</option>
+                </select>
+            </div>
+        </div>
+        <div class="chart-content">
+            <div id="geographicContainer" style="height: 400px;"></div>
+        </div>
+    </div>
+
+    <!-- Model Performance Metrics -->
+    <div class="chart-container" id="modelPerformanceChart">
+        <div class="chart-header">
+            <h5 class="chart-title">Model Performance Over Time</h5>
+            <div class="chart-controls">
+                <div class="form-check form-switch">
+                    <input class="form-check-input" type="checkbox" id="showConfidenceInterval" checked>
+                    <label class="form-check-label" for="showConfidenceInterval">
+                        Confidence Interval
+                    </label>
+                </div>
+            </div>
+        </div>
+        <div class="chart-content">
+            <div id="modelPerformanceContainer" style="height: 300px;"></div>
+        </div>
+    </div>
+
+    <!-- Alert Severity Breakdown -->
+    <div class="chart-container" id="alertSeverityChart">
+        <div class="chart-header">
+            <h5 class="chart-title">Alert Severity Breakdown</h5>
+            <div class="chart-controls">
+                <div class="btn-group btn-group-sm" role="group">
+                    <input type="radio" class="btn-check" name="alertView" id="alertPie" checked>
+                    <label class="btn btn-outline-primary" for="alertPie">Pie</label>
+                    
+                    <input type="radio" class="btn-check" name="alertView" id="alertBar">
+                    <label class="btn btn-outline-primary" for="alertBar">Bar</label>
+                </div>
+            </div>
+        </div>
+        <div class="chart-content">
+            <div id="alertSeverityContainer" style="height: 300px;"></div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Chart component functionality
+class ChartComponents {
+    constructor() {
+        this.charts = {};
+        this.updateIntervals = {};
+        this.initialize();
+    }
+
+    initialize() {
+        this.initializeFraudRateChart();
+        this.initializeTransactionVolumeChart();
+        this.initializeRiskDistributionChart();
+        this.initializeGeographicChart();
+        this.initializeModelPerformanceChart();
+        this.initializeAlertSeverityChart();
+        
+        this.bindEvents();
+        this.startAutoUpdates();
+    }
+
+    initializeFraudRateChart() {
+        const trace = {
+            x: [],
+            y: [],
+            type: 'scatter',
+            mode: 'lines+markers',
+            name: 'Fraud Rate',
+            line: { color: '#dc3545', width: 2 },
+            marker: { size: 6 }
+        };
+
+        const layout = {
+            title: false,
+            xaxis: { title: 'Time' },
+            yaxis: { title: 'Fraud Rate (%)' },
+            margin: { l: 50, r: 20, t: 20, b: 40 },
+            showlegend: false
+        };
+
+        this.charts.fraudRate = Plotly.newPlot('fraudRateChartContainer', [trace], layout, {
+            responsive: true,
+            displayModeBar: false
+        });
+    }
+
+    initializeTransactionVolumeChart() {
+        const trace1 = {
+            x: [],
+            y: [],
+            type: 'bar',
+            name: 'Legitimate',
+            marker: { color: '#28a745' }
+        };
+
+        const trace2 = {
+            x: [],
+            y: [],
+            type: 'bar',
+            name: 'Fraudulent',
+            marker: { color: '#dc3545' }
+        };
+
+        const layout = {
+            title: false,
+            barmode: 'stack',
+            xaxis: { title: 'Time' },
+            yaxis: { title: 'Transaction Count' },
+            margin: { l: 50, r: 20, t: 20, b: 40 }
+        };
+
+        this.charts.transactionVolume = Plotly.newPlot('transactionVolumeContainer', [trace1, trace2], layout, {
+            responsive: true,
+            displayModeBar: false
+        });
+    }
+
+    initializeRiskDistributionChart() {
+        const trace = {
+            x: [],
+            type: 'histogram',
+            nbinsx: 20,
+            marker: { color: '#007bff' },
+            opacity: 0.7
+        };
+
+        const layout = {
+            title: false,
+            xaxis: { title: 'Risk Score' },
+            yaxis: { title: 'Frequency' },
+            margin: { l: 50, r: 20, t: 20, b: 40 },
+            showlegend: false
+        };
+
+        this.charts.riskDistribution = Plotly.newPlot('riskDistributionContainer', [trace], layout, {
+            responsive: true,
+            displayModeBar: false
+        });
+    }
+
+    initializeGeographicChart() {
+        const trace = {
+            type: 'choropleth',
+            locationmode: 'USA-states',
+            z: [],
+            locations: [],
+            colorscale: [
+                [0, '#fff'],
+                [1, '#dc3545']
+            ],
+            colorbar: {
+                title: 'Fraud Rate'
+            }
+        };
+
+        const layout = {
+            title: false,
+            geo: {
+                scope: 'usa',
+                showlakes: true,
+                lakecolor: 'rgb(255,255,255)'
+            },
+            margin: { l: 0, r: 0, t: 0, b: 0 }
+        };
+
+        this.charts.geographic = Plotly.newPlot('geographicContainer', [trace], layout, {
+            responsive: true,
+            displayModeBar: false
+        });
+    }
+
+    initializeModelPerformanceChart() {
+        const traces = [
+            {
+                x: [],
+                y: [],
+                type: 'scatter',
+                mode: 'lines+markers',
+                name: 'Accuracy',
+                line: { color: '#007bff' }
+            },
+            {
+                x: [],
+                y: [],
+                type: 'scatter',
+                mode: 'lines+markers',
+                name: 'Precision',
+                line: { color: '#28a745' }
+            },
+            {
+                x: [],
+                y: [],
+                type: 'scatter',
+                mode: 'lines+markers',
+                name: 'Recall',
+                line: { color: '#ffc107' }
+            }
+        ];
+
+        const layout = {
+            title: false,
+            xaxis: { title: 'Time' },
+            yaxis: { title: 'Score', range: [0, 1] },
+            margin: { l: 50, r: 20, t: 20, b: 40 }
+        };
+
+        this.charts.modelPerformance = Plotly.newPlot('modelPerformanceContainer', traces, layout, {
+            responsive: true,
+            displayModeBar: false
+        });
+    }
+
+    initializeAlertSeverityChart() {
+        const trace = {
+            labels: ['Critical', 'High', 'Medium', 'Low'],
+            values: [0, 0, 0, 0],
+            type: 'pie',
+            marker: {
+                colors: ['#dc3545', '#fd7e14', '#ffc107', '#28a745']
+            }
+        };
+
+        const layout = {
+            title: false,
+            margin: { l: 20, r: 20, t: 20, b: 20 },
+            showlegend: true
+        };
+
+        this.charts.alertSeverity = Plotly.newPlot('alertSeverityContainer', [trace], layout, {
+            responsive: true,
+            displayModeBar: false
+        });
+    }
+
+    bindEvents() {
+        // Fraud rate timeframe change
+        document.getElementById('fraudRateTimeframe').addEventListener('change', (e) => {
+            this.updateFraudRateChart(e.target.value);
+        });
+
+        // Transaction volume type change
+        document.querySelectorAll('input[name="volumeType"]').forEach(radio => {
+            radio.addEventListener('change', (e) => {
+                this.updateTransactionVolumeChart(e.target.id === 'volumeAmount');
+            });
+        });
+
+        // Risk distribution refresh
+        document.getElementById('refreshRiskDist').addEventListener('click', () => {
+            this.updateRiskDistributionChart();
+        });
+
+        // Geographic metric change
+        document.getElementById('geoMetric').addEventListener('change', (e) => {
+            this.updateGeographicChart(e.target.value);
+        });
+
+        // Alert view change
+        document.querySelectorAll('input[name="alertView"]').forEach(radio => {
+            radio.addEventListener('change', (e) => {
+                this.updateAlertSeverityChart(e.target.id === 'alertBar');
+            });
+        });
+    }
+
+    startAutoUpdates() {
+        // Update fraud rate every 30 seconds
+        this.updateIntervals.fraudRate = setInterval(() => {
+            this.updateFraudRateChart();
+        }, 30000);
+
+        // Update transaction volume every 60 seconds
+        this.updateIntervals.transactionVolume = setInterval(() => {
+            this.updateTransactionVolumeChart();
+        }, 60000);
+
+        // Update model performance every 5 minutes
+        this.updateIntervals.modelPerformance = setInterval(() => {
+            this.updateModelPerformanceChart();
+        }, 300000);
+
+        // Update alert severity every 30 seconds
+        this.updateIntervals.alertSeverity = setInterval(() => {
+            this.updateAlertSeverityChart();
+        }, 30000);
+    }
+
+    async updateFraudRateChart(timeframe = '24h') {
+        try {
+            const response = await fetch(`/api/reports/fraud-rate?timeframe=${timeframe}`);
+            const data = await response.json();
+
+            const update = {
+                x: [data.timestamps],
+                y: [data.fraud_rates]
+            };
+
+            Plotly.restyle('fraudRateChartContainer', update, [0]);
+        } catch (error) {
+            console.error('Failed to update fraud rate chart:', error);
+        }
+    }
+
+    async updateTransactionVolumeChart(showAmount = false) {
+        try {
+            const response = await fetch(`/api/reports/transaction-volume?metric=${showAmount ? 'amount' : 'count'}`);
+            const data = await response.json();
+
+            const update = {
+                x: [data.timestamps, data.timestamps],
+                y: [data.legitimate, data.fraudulent]
+            };
+
+            Plotly.restyle('transactionVolumeContainer', update, [0, 1]);
+        } catch (error) {
+            console.error('Failed to update transaction volume chart:', error);
+        }
+    }
+
+    async updateRiskDistributionChart() {
+        try {
+            const response = await fetch('/api/reports/risk-distribution');
+            const data = await response.json();
+
+            const update = {
+                x: [data.risk_scores]
+            };
+
+            Plotly.restyle('riskDistributionContainer', update, [0]);
+        } catch (error) {
+            console.error('Failed to update risk distribution chart:', error);
+        }
+    }
+
+    async updateGeographicChart(metric = 'count') {
+        try {
+            const response = await fetch(`/api/reports/geographic-fraud?metric=${metric}`);
+            const data = await response.json();
+
+            const update = {
+                z: [data.values],
+                locations: [data.locations]
+            };
+
+            Plotly.restyle('geographicContainer', update, [0]);
+        } catch (error) {
+            console.error('Failed to update geographic chart:', error);
+        }
+    }
+
+    async updateModelPerformanceChart() {
+        try {
+            const response = await fetch('/api/reports/model-performance');
+            const data = await response.json();
+
+            const update = {
+                x: [data.timestamps, data.timestamps, data.timestamps],
+                y: [data.accuracy, data.precision, data.recall]
+            };
+
+            Plotly.restyle('modelPerformanceContainer', update, [0, 1, 2]);
+        } catch (error) {
+            console.error('Failed to update model performance chart:', error);
+        }
+    }
+
+    async updateAlertSeverityChart(asBar = false) {
+        try {
+            const response = await fetch('/api/reports/alert-severity');
+            const data = await response.json();
+
+            if (asBar) {
+                const trace = {
+                    x: data.labels,
+                    y: data.values,
+                    type: 'bar',
+                    marker: {
+                        color: ['#dc3545', '#fd7e14', '#ffc107', '#28a745']
+                    }
+                };
+
+                Plotly.newPlot('alertSeverityContainer', [trace], {
+                    title: false,
+                    margin: { l: 50, r: 20, t: 20, b: 40 }
+                });
+            } else {
+                const update = {
+                    values: [data.values]
+                };
+
+                Plotly.restyle('alertSeverityContainer', update, [0]);
+            }
+        } catch (error) {
+            console.error('Failed to update alert severity chart:', error);
+        }
+    }
+
+    // Public method to refresh all charts
+    refreshAllCharts() {
+        this.updateFraudRateChart();
+        this.updateTransactionVolumeChart();
+        this.updateRiskDistributionChart();
+        this.updateGeographicChart();
+        this.updateModelPerformanceChart();
+        this.updateAlertSeverityChart();
+    }
+
+    // Public method to destroy all charts and intervals
+    destroy() {
+        Object.values(this.updateIntervals).forEach(interval => {
+            clearInterval(interval);
+        });
+
+        Object.keys(this.charts).forEach(chartId => {
+            Plotly.purge(`${chartId}Container`);
+        });
+    }
+}
+
+// Initialize charts when DOM is loaded
+document.addEventListener('DOMContentLoaded', function() {
+    window.chartComponents = new ChartComponents();
+});
+</script>

@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Financial Fraud Detection System{% endblock %}</title>
+    
+    <!-- CSS Dependencies -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.min.css" rel="stylesheet">
+    
+    <!-- Custom CSS -->
+    <link href="{{ url_for('static', filename='css/main.css') }}" rel="stylesheet">
+    <link href="{{ url_for('static', filename='css/dashboard.css') }}" rel="stylesheet">
+    <link href="{{ url_for('static', filename='css/components.css') }}" rel="stylesheet">
+    
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    <!-- Header Component -->
+    {% include 'components/header.html' %}
+    
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Sidebar Component -->
+            {% include 'components/sidebar.html' %}
+            
+            <!-- Main Content -->
+            <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+                {% block content %}{% endblock %}
+            </main>
+        </div>
+    </div>
+    
+    <!-- Connection Status Indicator -->
+    <div id="connection-status" class="position-fixed top-0 end-0 m-3">
+        <div class="alert alert-info d-none" id="status-connecting">
+            <i class="fas fa-spinner fa-spin"></i> Connecting...
+        </div>
+        <div class="alert alert-success d-none" id="status-connected">
+            <i class="fas fa-circle text-success"></i> Connected
+        </div>
+        <div class="alert alert-danger d-none" id="status-disconnected">
+            <i class="fas fa-circle text-danger"></i> Disconnected
+        </div>
+    </div>
+    
+    <!-- Alert Container -->
+    <div id="alert-container" class="position-fixed top-0 start-50 translate-middle-x mt-3" style="z-index: 1060;">
+    </div>
+    
+    <!-- JavaScript Dependencies -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.min.js"></script>
+    <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios@1.5.0/dist/axios.min.js"></script>
+    
+    <!-- Custom JavaScript -->
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/websocket.js') }}"></script>
+    
+    {% block extra_js %}{% endblock %}
+    
+    <!-- Initialize Application -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize the fraud detection system
+            if (typeof FraudDetectionApp !== 'undefined') {
+                window.fraudApp = new FraudDetectionApp();
+            }
+        });
+    </script>
+</body>
+</html>

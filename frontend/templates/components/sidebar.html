@@ -1,0 +1,542 @@
+<!-- Dynamic Sidebar Navigation -->
+<div class="sidebar" id="sidebar">
+    <!-- Sidebar Header -->
+    <div class="sidebar-header">
+        <div class="sidebar-brand">
+            <i class="fas fa-shield-alt"></i>
+            <span class="brand-text">FraudGuard</span>
+        </div>
+        <button class="sidebar-toggle" id="sidebarToggle">
+            <i class="fas fa-bars"></i>
+        </button>
+    </div>
+
+    <!-- Quick Stats Section -->
+    <div class="sidebar-section">
+        <div class="section-title">Quick Stats</div>
+        <div class="quick-stats">
+            <div class="stat-item">
+                <div class="stat-icon bg-primary">
+                    <i class="fas fa-eye"></i>
+                </div>
+                <div class="stat-content">
+                    <div class="stat-value" id="sidebarActiveMonitors">0</div>
+                    <div class="stat-label">Active Monitors</div>
+                </div>
+            </div>
+            
+            <div class="stat-item">
+                <div class="stat-icon bg-danger">
+                    <i class="fas fa-exclamation-triangle"></i>
+                </div>
+                <div class="stat-content">
+                    <div class="stat-value" id="sidebarActiveAlerts">0</div>
+                    <div class="stat-label">Active Alerts</div>
+                </div>
+            </div>
+            
+            <div class="stat-item">
+                <div class="stat-icon bg-success">
+                    <i class="fas fa-shield-alt"></i>
+                </div>
+                <div class="stat-content">
+                    <div class="stat-value" id="sidebarFraudsPrevented">0</div>
+                    <div class="stat-label">Frauds Prevented</div>
+                </div>
+            </div>
+            
+            <div class="stat-item">
+                <div class="stat-icon bg-warning">
+                    <i class="fas fa-dollar-sign"></i>
+                </div>
+                <div class="stat-content">
+                    <div class="stat-value" id="sidebarAmountProtected">$0</div>
+                    <div class="stat-label">Amount Protected</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- System Health Section -->
+    <div class="sidebar-section">
+        <div class="section-title">System Health</div>
+        <div class="health-indicators">
+            <div class="health-item">
+                <div class="health-label">
+                    <i class="fas fa-database me-2"></i>Database
+                </div>
+                <div class="health-status">
+                    <div class="status-indicator" id="dbStatus">
+                        <div class="status-dot bg-success"></div>
+                        <span class="status-text">Online</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="health-item">
+                <div class="health-label">
+                    <i class="fas fa-brain me-2"></i>ML Models
+                </div>
+                <div class="health-status">
+                    <div class="status-indicator" id="mlStatus">
+                        <div class="status-dot bg-success"></div>
+                        <span class="status-text">Active</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="health-item">
+                <div class="health-label">
+                    <i class="fas fa-stream me-2"></i>Data Stream
+                </div>
+                <div class="health-status">
+                    <div class="status-indicator" id="streamStatus">
+                        <div class="status-dot bg-success"></div>
+                        <span class="status-text">Flowing</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="health-item">
+                <div class="health-label">
+                    <i class="fas fa-bell me-2"></i>Alerts System
+                </div>
+                <div class="health-status">
+                    <div class="status-indicator" id="alertsStatus">
+                        <div class="status-dot bg-success"></div>
+                        <span class="status-text">Ready</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Performance Metrics -->
+        <div class="performance-metrics mt-3">
+            <div class="metric-item">
+                <div class="metric-label">CPU Usage</div>
+                <div class="metric-bar">
+                    <div class="metric-progress">
+                        <div class="progress-fill bg-info" id="cpuUsage" style="width: 35%"></div>
+                    </div>
+                    <span class="metric-value" id="cpuValue">35%</span>
+                </div>
+            </div>
+            
+            <div class="metric-item">
+                <div class="metric-label">Memory</div>
+                <div class="metric-bar">
+                    <div class="metric-progress">
+                        <div class="progress-fill bg-warning" id="memoryUsage" style="width: 65%"></div>
+                    </div>
+                    <span class="metric-value" id="memoryValue">65%</span>
+                </div>
+            </div>
+            
+            <div class="metric-item">
+                <div class="metric-label">Queue</div>
+                <div class="metric-bar">
+                    <div class="metric-progress">
+                        <div class="progress-fill bg-success" id="queueUsage" style="width: 20%"></div>
+                    </div>
+                    <span class="metric-value" id="queueValue">20%</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Activity Section -->
+    <div class="sidebar-section">
+        <div class="section-title">Recent Activity</div>
+        <div class="activity-feed" id="activityFeed">
+            <div class="activity-item">
+                <div class="activity-icon bg-danger">
+                    <i class="fas fa-exclamation-triangle"></i>
+                </div>
+                <div class="activity-content">
+                    <div class="activity-text">High-risk transaction detected</div>
+                    <div class="activity-time">2 minutes ago</div>
+                </div>
+            </div>
+            
+            <div class="activity-item">
+                <div class="activity-icon bg-success">
+                    <i class="fas fa-shield-alt"></i>
+                </div>
+                <div class="activity-content">
+                    <div class="activity-text">Fraud attempt blocked</div>
+                    <div class="activity-time">5 minutes ago</div>
+                </div>
+            </div>
+            
+            <div class="activity-item">
+                <div class="activity-icon bg-info">
+                    <i class="fas fa-sync-alt"></i>
+                </div>
+                <div class="activity-content">
+                    <div class="activity-text">Model retrained successfully</div>
+                    <div class="activity-time">1 hour ago</div>
+                </div>
+            </div>
+            
+            <div class="activity-item">
+                <div class="activity-icon bg-warning">
+                    <i class="fas fa-user-shield"></i>
+                </div>
+                <div class="activity-content">
+                    <div class="activity-text">New user behavior pattern</div>
+                    <div class="activity-time">2 hours ago</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="activity-actions">
+            <button class="btn btn-sm btn-outline-primary w-100" id="viewAllActivity">
+                <i class="fas fa-list me-1"></i>View All Activity
+            </button>
+        </div>
+    </div>
+
+    <!-- Quick Actions Section -->
+    <div class="sidebar-section">
+        <div class="section-title">Quick Actions</div>
+        <div class="quick-actions">
+            <button class="action-btn" id="runFraudTest" data-bs-toggle="modal" data-bs-target="#fraudTesterModal">
+                <i class="fas fa-vial"></i>
+                <span>Test Fraud Detection</span>
+            </button>
+            
+            <button class="action-btn" id="generateReport">
+                <i class="fas fa-file-alt"></i>
+                <span>Generate Report</span>
+            </button>
+            
+            <button class="action-btn" id="exportData">
+                <i class="fas fa-download"></i>
+                <span>Export Data</span>
+            </button>
+            
+            <button class="action-btn" id="systemSettings" data-bs-toggle="modal" data-bs-target="#settingsModal">
+                <i class="fas fa-cog"></i>
+                <span>Settings</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- Model Performance Section -->
+    <div class="sidebar-section">
+        <div class="section-title">Model Performance</div>
+        <div class="model-metrics">
+            <div class="metric-circle">
+                <div class="circle-progress" data-percentage="94">
+                    <canvas width="80" height="80"></canvas>
+                    <div class="circle-content">
+                        <span class="percentage">94%</span>
+                        <span class="label">Accuracy</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="metric-details">
+                <div class="metric-row">
+                    <span class="metric-name">Precision:</span>
+                    <span class="metric-val">89.7%</span>
+                </div>
+                <div class="metric-row">
+                    <span class="metric-name">Recall:</span>
+                    <span class="metric-val">91.3%</span>
+                </div>
+                <div class="metric-row">
+                    <span class="metric-name">F1-Score:</span>
+                    <span class="metric-val">90.5%</span>
+                </div>
+                <div class="metric-row">
+                    <span class="metric-name">AUC-ROC:</span>
+                    <span class="metric-val">0.967</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sidebar Footer -->
+    <div class="sidebar-footer">
+        <div class="footer-info">
+            <div class="version-info">
+                <small class="text-muted">FraudGuard v2.1.0</small>
+            </div>
+            <div class="last-update">
+                <small class="text-muted">Updated: <span id="lastUpdate">Just now</span></small>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Sidebar functionality
+document.addEventListener('DOMContentLoaded', function() {
+    initializeSidebar();
+    startSidebarUpdates();
+    setupSidebarActions();
+});
+
+function initializeSidebar() {
+    // Toggle sidebar
+    document.getElementById('sidebarToggle').addEventListener('click', toggleSidebar);
+    
+    // Draw model performance circle
+    drawModelPerformanceCircle();
+    
+    // Load initial data
+    updateSidebarStats();
+    updateSystemHealth();
+    updateActivityFeed();
+}
+
+function toggleSidebar() {
+    const sidebar = document.getElementById('sidebar');
+    sidebar.classList.toggle('collapsed');
+    
+    // Save state
+    localStorage.setItem('sidebarCollapsed', sidebar.classList.contains('collapsed'));
+}
+
+function startSidebarUpdates() {
+    // Update stats every 10 seconds
+    setInterval(updateSidebarStats, 10000);
+    
+    // Update system health every 30 seconds
+    setInterval(updateSystemHealth, 30000);
+    
+    // Update activity feed every 20 seconds
+    setInterval(updateActivityFeed, 20000);
+    
+    // Update performance metrics every 5 seconds
+    setInterval(updatePerformanceMetrics, 5000);
+}
+
+async function updateSidebarStats() {
+    try {
+        const response = await fetch('/api/monitoring/sidebar-stats');
+        const stats = await response.json();
+        
+        document.getElementById('sidebarActiveMonitors').textContent = stats.active_monitors;
+        document.getElementById('sidebarActiveAlerts').textContent = stats.active_alerts;
+        document.getElementById('sidebarFraudsPrevented').textContent = stats.frauds_prevented;
+        document.getElementById('sidebarAmountProtected').textContent = `$${formatCurrency(stats.amount_protected)}`;
+    } catch (error) {
+        console.error('Failed to update sidebar stats:', error);
+    }
+}
+
+async function updateSystemHealth() {
+    try {
+        const response = await fetch('/api/monitoring/system-health');
+        const health = await response.json();
+        
+        updateHealthIndicator('dbStatus', health.database);
+        updateHealthIndicator('mlStatus', health.ml_models);
+        updateHealthIndicator('streamStatus', health.data_stream);
+        updateHealthIndicator('alertsStatus', health.alerts_system);
+    } catch (error) {
+        console.error('Failed to update system health:', error);
+    }
+}
+
+function updateHealthIndicator(elementId, status) {
+    const element = document.getElementById(elementId);
+    const dot = element.querySelector('.status-dot');
+    const text = element.querySelector('.status-text');
+    
+    if (status.healthy) {
+        dot.className = 'status-dot bg-success';
+        text.textContent = status.status || 'Online';
+    } else {
+        dot.className = 'status-dot bg-danger';
+        text.textContent = status.status || 'Offline';
+    }
+}
+
+async function updatePerformanceMetrics() {
+    try {
+        const response = await fetch('/api/monitoring/performance-metrics');
+        const metrics = await response.json();
+        
+        updateMetricBar('cpuUsage', 'cpuValue', metrics.cpu_usage);
+        updateMetricBar('memoryUsage', 'memoryValue', metrics.memory_usage);
+        updateMetricBar('queueUsage', 'queueValue', metrics.queue_usage);
+    } catch (error) {
+        console.error('Failed to update performance metrics:', error);
+    }
+}
+
+function updateMetricBar(barId, valueId, percentage) {
+    const bar = document.getElementById(barId);
+    const value = document.getElementById(valueId);
+    
+    bar.style.width = `${percentage}%`;
+    value.textContent = `${percentage}%`;
+    
+    // Update color based on usage
+    bar.className = 'progress-fill';
+    if (percentage > 80) {
+        bar.classList.add('bg-danger');
+    } else if (percentage > 60) {
+        bar.classList.add('bg-warning');
+    } else {
+        bar.classList.add('bg-success');
+    }
+}
+
+async function updateActivityFeed() {
+    try {
+        const response = await fetch('/api/monitoring/recent-activity');
+        const activities = await response.json();
+        
+        renderActivityFeed(activities);
+    } catch (error) {
+        console.error('Failed to update activity feed:', error);
+    }
+}
+
+function renderActivityFeed(activities) {
+    const feed = document.getElementById('activityFeed');
+    
+    const activityHtml = activities.slice(0, 4).map(activity => `
+        <div class="activity-item">
+            <div class="activity-icon bg-${activity.type}">
+                <i class="fas fa-${activity.icon}"></i>
+            </div>
+            <div class="activity-content">
+                <div class="activity-text">${activity.message}</div>
+                <div class="activity-time">${formatTimeAgo(activity.timestamp)}</div>
+            </div>
+        </div>
+    `).join('');
+    
+    feed.innerHTML = activityHtml;
+}
+
+function drawModelPerformanceCircle() {
+    const circle = document.querySelector('.circle-progress');
+    const canvas = circle.querySelector('canvas');
+    const ctx = canvas.getContext('2d');
+    const percentage = parseInt(circle.dataset.percentage);
+    
+    const centerX = canvas.width / 2;
+    const centerY = canvas.height / 2;
+    const radius = 30;
+    
+    // Clear canvas
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    
+    // Draw background circle
+    ctx.beginPath();
+    ctx.arc(centerX, centerY, radius, 0, 2 * Math.PI);
+    ctx.lineWidth = 6;
+    ctx.strokeStyle = '#e0e0e0';
+    ctx.stroke();
+    
+    // Draw progress arc
+    const angle = (percentage / 100) * 2 * Math.PI;
+    ctx.beginPath();
+    ctx.arc(centerX, centerY, radius, -Math.PI / 2, -Math.PI / 2 + angle);
+    ctx.lineWidth = 6;
+    ctx.strokeStyle = percentage > 90 ? '#28a745' : percentage > 70 ? '#ffc107' : '#dc3545';
+    ctx.stroke();
+}
+
+function setupSidebarActions() {
+    document.getElementById('generateReport').addEventListener('click', generateQuickReport);
+    document.getElementById('exportData').addEventListener('click', exportQuickData);
+    document.getElementById('viewAllActivity').addEventListener('click', viewAllActivity);
+}
+
+async function generateQuickReport() {
+    try {
+        const response = await fetch('/api/reports/quick-generate', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                type: 'daily_summary',
+                format: 'pdf'
+            })
+        });
+        
+        if (response.ok) {
+            const blob = await response.blob();
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `fraud-report-${new Date().toISOString().split('T')[0]}.pdf`;
+            a.click();
+            window.URL.revokeObjectURL(url);
+        }
+    } catch (error) {
+        console.error('Failed to generate report:', error);
+    }
+}
+
+async function exportQuickData() {
+    try {
+        const response = await fetch('/api/transactions/export', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                format: 'csv',
+                date_range: 'today'
+            })
+        });
+        
+        if (response.ok) {
+            const blob = await response.blob();
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `transactions-${new Date().toISOString().split('T')[0]}.csv`;
+            a.click();
+            window.URL.revokeObjectURL(url);
+        }
+    } catch (error) {
+        console.error('Failed to export data:', error);
+    }
+}
+
+function viewAllActivity() {
+    // Navigate to alerts page or open activity modal
+    window.location.href = '/alerts';
+}
+
+function formatCurrency(amount) {
+    return new Intl.NumberFormat('en-US', {
+        style: 'decimal',
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 0
+    }).format(amount);
+}
+
+function formatTimeAgo(timestamp) {
+    const now = new Date();
+    const time = new Date(timestamp);
+    const diff = now - time;
+    
+    const minutes = Math.floor(diff / 60000);
+    const hours = Math.floor(diff / 3600000);
+    const days = Math.floor(diff / 86400000);
+    
+    if (minutes < 1) return 'Just now';
+    if (minutes < 60) return `${minutes}m ago`;
+    if (hours < 24) return `${hours}h ago`;
+    return `${days}d ago`;
+}
+
+// Load collapsed state on page load
+document.addEventListener('DOMContentLoaded', function() {
+    const isCollapsed = localStorage.getItem('sidebarCollapsed') === 'true';
+    if (isCollapsed) {
+        document.getElementById('sidebar').classList.add('collapsed');
+    }
+});
+</script>

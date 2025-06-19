@@ -1,0 +1,1109 @@
+</div>
+</div>
+
+<!-- Analytics Charts Grid -->
+<div class="row">
+    <!-- Fraud Trends Over Time -->
+    <div class="col-lg-8 mb-4">
+        <div class="chart-container">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h5 class="mb-0">
+                    <i class="fas fa-chart-line me-2"></i>Fraud Detection Trends
+                </h5>
+                <div class="btn-group btn-group-sm">
+                    <button class="btn btn-outline-secondary active" data-chart-view="daily">Daily</button>
+                    <button class="btn btn-outline-secondary" data-chart-view="weekly">Weekly</button>
+                    <button class="btn btn-outline-secondary" data-chart-view="monthly">Monthly</button>
+                </div>
+            </div>
+            <div id="fraud-trends-chart" style="width:100%;height:400px;"></div>
+        </div>
+    </div>
+    
+    <!-- Model Performance Metrics -->
+    <div class="col-lg-4 mb-4">
+        <div class="chart-container">
+            <h5 class="mb-3">
+                <i class="fas fa-brain me-2"></i>Model Performance
+            </h5>
+            <div id="model-performance-gauge" style="width:100%;height:400px;"></div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <!-- Transaction Category Analysis -->
+    <div class="col-lg-6 mb-4">
+        <div class="chart-container">
+            <h5 class="mb-3">
+                <i class="fas fa-chart-pie me-2"></i>Fraud by Transaction Category
+            </h5>
+            <div id="category-analysis-chart" style="width:100%;height:350px;"></div>
+        </div>
+    </div>
+    
+    <!-- Geographic Risk Distribution -->
+    <div class="col-lg-6 mb-4">
+        <div class="chart-container">
+            <h5 class="mb-3">
+                <i class="fas fa-globe-americas me-2"></i>Geographic Risk Distribution
+            </h5>
+            <div id="geographic-risk-chart" style="width:100%;height:350px;"></div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <!-- Hourly Transaction Patterns -->
+    <div class="col-lg-8 mb-4">
+        <div class="chart-container">
+            <h5 class="mb-3">
+                <i class="fas fa-clock me-2"></i>Hourly Transaction Patterns
+            </h5>
+            <div id="hourly-patterns-chart" style="width:100%;height:300px;"></div>
+        </div>
+    </div>
+    
+    <!-- Risk Score Distribution -->
+    <div class="col-lg-4 mb-4">
+        <div class="chart-container">
+            <h5 class="mb-3">
+                <i class="fas fa-chart-bar me-2"></i>Risk Score Distribution
+            </h5>
+            <div id="risk-distribution-chart" style="width:100%;height:300px;"></div>
+        </div>
+    </div>
+</div>
+
+<!-- Advanced Analytics -->
+<div class="row">
+    <div class="col-12 mb-4">
+        <div class="chart-container">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h5 class="mb-0">
+                    <i class="fas fa-chart-area me-2"></i>Advanced Analytics Dashboard
+                </h5>
+                <div class="btn-group btn-group-sm">
+                    <button class="btn btn-outline-secondary active" data-analytics-view="correlation">Correlation Matrix</button>
+                    <button class="btn btn-outline-secondary" data-analytics-view="cohort">Cohort Analysis</button>
+                    <button class="btn btn-outline-secondary" data-analytics-view="funnel">Fraud Funnel</button>
+                </div>
+            </div>
+            <div id="advanced-analytics-chart" style="width:100%;height:500px;"></div>
+        </div>
+    </div>
+</div>
+
+<!-- Performance Reports -->
+<div class="row">
+    <div class="col-12">
+        <div class="card report-card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-table me-2"></i>Detailed Performance Reports
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover" id="performance-table">
+                        <thead>
+                            <tr>
+                                <th>Metric</th>
+                                <th>Current Period</th>
+                                <th>Previous Period</th>
+                                <th>Change</th>
+                                <th>Trend</th>
+                                <th>Target</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="performance-table-body">
+                            <!-- Performance data will be loaded here -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Export Modal -->
+<div class="modal fade" id="exportModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Export Report</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="export-form">
+                    <div class="mb-3">
+                        <label class="form-label">Report Type</label>
+                        <select class="form-select" id="export-type">
+                            <option value="summary">Executive Summary</option>
+                            <option value="detailed">Detailed Analytics</option>
+                            <option value="performance">Performance Report</option>
+                            <option value="compliance">Compliance Report</option>
+                            <option value="custom">Custom Report</option>
+                        </select>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Format</label>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="format" value="pdf" id="format-pdf" checked>
+                            <label class="form-check-label" for="format-pdf">PDF</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="format" value="excel" id="format-excel">
+                            <label class="form-check-label" for="format-excel">Excel</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="format" value="csv" id="format-csv">
+                            <label class="form-check-label" for="format-csv">CSV</label>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Include Charts</label>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="include-charts" checked>
+                            <label class="form-check-label" for="include-charts">
+                                Include all charts and visualizations
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Email Recipients (optional)</label>
+                        <input type="email" class="form-control" id="email-recipients" 
+                               placeholder="admin@company.com, manager@company.com">
+                        <small class="form-text text-muted">Separate multiple emails with commas</small>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" id="generate-report">
+                    <i class="fas fa-download me-2"></i>Generate Report
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Custom Date Range Modal -->
+<div class="modal fade" id="customDateModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Custom Date Range</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-6">
+                        <label class="form-label">Start Date</label>
+                        <input type="datetime-local" class="form-control" id="custom-start-date">
+                    </div>
+                    <div class="col-6">
+                        <label class="form-label">End Date</label>
+                        <input type="datetime-local" class="form-control" id="custom-end-date">
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" id="apply-custom-range">Apply Range</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+<script src="{{ url_for('static', filename='js/charts.js') }}"></script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Initialize date range
+    initializeDateRange();
+    
+    // Initialize charts
+    initializeAllCharts();
+    
+    // Setup event listeners
+    setupEventListeners();
+    
+    // Load initial data
+    loadReportsData();
+});
+
+function initializeDateRange() {
+    const today = new Date();
+    const weekAgo = new Date(today.getTime() - 7 * 24 * 60 * 60 * 1000);
+    
+    document.getElementById('date-from').value = weekAgo.toISOString().split('T')[0];
+    document.getElementById('date-to').value = today.toISOString().split('T')[0];
+}
+
+function setupEventListeners() {
+    // Time range buttons
+    document.querySelectorAll('.time-range').forEach(btn => {
+        btn.addEventListener('click', function(e) {
+            e.preventDefault();
+            const range = this.dataset.range;
+            
+            if (range === 'custom') {
+                const modal = new bootstrap.Modal(document.getElementById('customDateModal'));
+                modal.show();
+            } else {
+                applyTimeRange(range);
+            }
+        });
+    });
+    
+    // Date range apply button
+    document.getElementById('apply-date-range').addEventListener('click', function() {
+        const fromDate = document.getElementById('date-from').value;
+        const toDate = document.getElementById('date-to').value;
+        
+        if (fromDate && toDate) {
+            loadReportsData(fromDate, toDate);
+        }
+    });
+    
+    // Chart view toggles
+    document.querySelectorAll('[data-chart-view]').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const view = this.dataset.chartView;
+            
+            // Update active state
+            this.parentElement.querySelectorAll('button').forEach(b => b.classList.remove('active'));
+            this.classList.add('active');
+            
+            // Update chart
+            updateFraudTrendsChart(view);
+        });
+    });
+    
+    // Analytics view toggles
+    document.querySelectorAll('[data-analytics-view]').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const view = this.dataset.analyticsView;
+            
+            // Update active state
+            this.parentElement.querySelectorAll('button').forEach(b => b.classList.remove('active'));
+            this.classList.add('active');
+            
+            // Update chart
+            updateAdvancedAnalyticsChart(view);
+        });
+    });
+    
+    // Export functionality
+    document.getElementById('generate-report').addEventListener('click', generateReport);
+    
+    // Refresh button
+    document.getElementById('refresh-reports').addEventListener('click', function() {
+        loadReportsData();
+    });
+}
+
+function applyTimeRange(range) {
+    const today = new Date();
+    let startDate;
+    
+    switch (range) {
+        case '24h':
+            startDate = new Date(today.getTime() - 24 * 60 * 60 * 1000);
+            break;
+        case '7d':
+            startDate = new Date(today.getTime() - 7 * 24 * 60 * 60 * 1000);
+            break;
+        case '30d':
+            startDate = new Date(today.getTime() - 30 * 24 * 60 * 60 * 1000);
+            break;
+        case '90d':
+            startDate = new Date(today.getTime() - 90 * 24 * 60 * 60 * 1000);
+            break;
+        default:
+            return;
+    }
+    
+    document.getElementById('date-from').value = startDate.toISOString().split('T')[0];
+    document.getElementById('date-to').value = today.toISOString().split('T')[0];
+    
+    loadReportsData(startDate.toISOString().split('T')[0], today.toISOString().split('T')[0]);
+}
+
+async function loadReportsData(fromDate = null, toDate = null) {
+    try {
+        const params = new URLSearchParams();
+        if (fromDate) params.append('from_date', fromDate);
+        if (toDate) params.append('to_date', toDate);
+        
+        const response = await fetch(`/api/analytics/reports?${params}`);
+        const data = await response.json();
+        
+        updateMetrics(data.metrics);
+        updateCharts(data.charts);
+        updatePerformanceTable(data.performance);
+        
+    } catch (error) {
+        console.error('Failed to load reports data:', error);
+        showNotification('Failed to load reports data', 'error');
+    }
+}
+
+function updateMetrics(metrics) {
+    document.getElementById('total-transactions-metric').textContent = metrics.total_transactions?.toLocaleString() || '0';
+    document.getElementById('fraud-rate-metric').textContent = `${(metrics.fraud_rate * 100).toFixed(1)}%` || '0%';
+    document.getElementById('amount-saved-metric').textContent = `${(metrics.amount_saved / 1000000).toFixed(1)}M` || '$0';
+    document.getElementById('accuracy-metric').textContent = `${(metrics.accuracy * 100).toFixed(1)}%` || '0%';
+    
+    // Update trends
+    updateTrendIndicator('transactions-trend', metrics.transactions_trend);
+    updateTrendIndicator('fraud-rate-trend', metrics.fraud_rate_trend);
+    updateTrendIndicator('amount-saved-trend', metrics.amount_saved_trend);
+    updateTrendIndicator('accuracy-trend', metrics.accuracy_trend);
+}
+
+function updateTrendIndicator(elementId, trend) {
+    const element = document.getElementById(elementId);
+    if (!element || !trend) return;
+    
+    const isPositive = trend.value > 0;
+    const icon = element.previousElementSibling;
+    
+    element.textContent = `${isPositive ? '+' : ''}${trend.value.toFixed(1)}%`;
+    
+    if (trend.is_good === isPositive) {
+        icon.className = 'fas fa-arrow-up trend-up';
+    } else {
+        icon.className = 'fas fa-arrow-down trend-down';
+    }
+}
+
+function initializeAllCharts() {
+    initializeFraudTrendsChart();
+    initializeModelPerformanceGauge();
+    initializeCategoryAnalysisChart();
+    initializeGeographicRiskChart();
+    initializeHourlyPatternsChart();
+    initializeRiskDistributionChart();
+    initializeAdvancedAnalyticsChart();
+}
+
+function initializeFraudTrendsChart() {
+    // Generate sample data
+    const dates = Array.from({length: 30}, (_, i) => {
+        const date = new Date();
+        date.setDate(date.getDate() - (29 - i));
+        return date.toISOString().split('T')[0];
+    });
+    
+    const fraudCounts = Array.from({length: 30}, () => Math.floor(Math.random() * 50) + 10);
+    const totalCounts = fraudCounts.map(f => f + Math.floor(Math.random() * 500) + 200);
+    const fraudRates = fraudCounts.map((f, i) => (f / totalCounts[i] * 100));
+    
+    const trace1 = {
+        x: dates,
+        y: fraudCounts,
+        type: 'scatter',
+        mode: 'lines+markers',
+        name: 'Fraud Count',
+        line: { color: '#dc3545', width: 2 },
+        yaxis: 'y'
+    };
+    
+    const trace2 = {
+        x: dates,
+        y: fraudRates,
+        type: 'scatter',
+        mode: 'lines+markers',
+        name: 'Fraud Rate (%)',
+        line: { color: '#28a745', width: 2 },
+        yaxis: 'y2'
+    };
+    
+    const layout = {
+        title: '',
+        xaxis: { title: 'Date' },
+        yaxis: { 
+            title: 'Fraud Count',
+            side: 'left'
+        },
+        yaxis2: {
+            title: 'Fraud Rate (%)',
+            side: 'right',
+            overlaying: 'y'
+        },
+        legend: { x: 0, y: 1.1, orientation: 'h' },
+        margin: { l: 50, r: 50, t: 30, b: 50 }
+    };
+    
+    Plotly.newPlot('fraud-trends-chart', [trace1, trace2], layout, {
+        displayModeBar: false,
+        responsive: true
+    });
+}
+
+function initializeModelPerformanceGauge() {
+    const data = [
+        {
+            type: "indicator",
+            mode: "gauge+number+delta",
+            value: 94.2,
+            domain: { x: [0, 1], y: [0, 1] },
+            title: { text: "Model Accuracy %" },
+            delta: { reference: 90, increasing: { color: "green" } },
+            gauge: {
+                axis: { range: [null, 100] },
+                bar: { color: "#1f77b4" },
+                steps: [
+                    { range: [0, 70], color: "#ffcccc" },
+                    { range: [70, 85], color: "#ffffcc" },
+                    { range: [85, 100], color: "#ccffcc" }
+                ],
+                threshold: {
+                    line: { color: "red", width: 4 },
+                    thickness: 0.75,
+                    value: 90
+                }
+            }
+        }
+    ];
+    
+    const layout = {
+        margin: { t: 0, b: 0, l: 0, r: 0 },
+        font: { size: 12 }
+    };
+    
+    Plotly.newPlot('model-performance-gauge', data, layout, {
+        displayModeBar: false,
+        responsive: true
+    });
+}
+
+function initializeCategoryAnalysisChart() {
+    const categories = ['Online', 'ATM', 'Retail', 'Gas Station', 'Restaurant', 'Grocery'];
+    const fraudCounts = [35, 25, 20, 12, 8, 5];
+    const colors = ['#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4', '#FFEAA7', '#DDA0DD'];
+    
+    const data = [{
+        values: fraudCounts,
+        labels: categories,
+        type: 'pie',
+        marker: { colors: colors },
+        textinfo: 'label+percent',
+        textposition: 'outside'
+    }];
+    
+    const layout = {
+        margin: { t: 0, b: 0, l: 0, r: 0 },
+        showlegend: false
+    };
+    
+    Plotly.newPlot('category-analysis-chart', data, layout, {
+        displayModeBar: false,
+        responsive: true
+    });
+}
+
+function initializeGeographicRiskChart() {
+    const locations = ['USA', 'Canada', 'UK', 'Germany', 'France', 'International'];
+    const riskScores = [0.15, 0.12, 0.18, 0.22, 0.16, 0.65];
+    const colors = riskScores.map(score => score > 0.5 ? '#dc3545' : score > 0.3 ? '#ffc107' : '#28a745');
+    
+    const data = [{
+        x: locations,
+        y: riskScores,
+        type: 'bar',
+        marker: { color: colors },
+        text: riskScores.map(s => `${(s * 100).toFixed(1)}%`),
+        textposition: 'auto'
+    }];
+    
+    const layout = {
+        title: '',
+        yaxis: { title: 'Risk Score', range: [0, 1] },
+        margin: { t: 20, b: 50, l: 50, r: 20 }
+    };
+    
+    Plotly.newPlot('geographic-risk-chart', data, layout, {
+        displayModeBar: false,
+        responsive: true
+    });
+}
+
+function initializeHourlyPatternsChart() {
+    const hours = Array.from({length: 24}, (_, i) => `${i}:00`);
+    const legitimateTransactions = Array.from({length: 24}, (_, i) => {
+        // Normal business hours have more transactions
+        if (i >= 9 && i <= 17) return Math.floor(Math.random() * 100) + 80;
+        if (i >= 18 && i <= 22) return Math.floor(Math.random() * 60) + 40;
+        return Math.floor(Math.random() * 20) + 5;
+    });
+    
+    const fraudTransactions = Array.from({length: 24}, (_, i) => {
+        // Fraud tends to be higher during off-hours
+        if (i >= 0 && i <= 6) return Math.floor(Math.random() * 15) + 8;
+        if (i >= 23) return Math.floor(Math.random() * 12) + 6;
+        return Math.floor(Math.random() * 8) + 2;
+    });
+    
+    const trace1 = {
+        x: hours,
+        y: legitimateTransactions,
+        name: 'Legitimate',
+        type: 'bar',
+        marker: { color: '#28a745' }
+    };
+    
+    const trace2 = {
+        x: hours,
+        y: fraudTransactions,
+        name: 'Fraud',
+        type: 'bar',
+        marker: { color: '#dc3545' }
+    };
+    
+    const layout = {
+        title: '',
+        barmode: 'stack',
+        xaxis: { title: 'Hour of Day' },
+        yaxis: { title: 'Transaction Count' },
+        legend: { x: 0, y: 1.1, orientation: 'h' },
+        margin: { t: 20, b: 50, l: 50, r: 20 }
+    };
+    
+    Plotly.newPlot('hourly-patterns-chart', [trace1, trace2], layout, {
+        displayModeBar: false,
+        responsive: true
+    });
+}
+
+function initializeRiskDistributionChart() {
+    const riskRanges = ['0-10%', '10-30%', '30-50%', '50-70%', '70-90%', '90-100%'];
+    const counts = [2500, 1800, 800, 400, 200, 50];
+    const colors = ['#28a745', '#6f9b47', '#ffc107', '#fd7e14', '#dc3545', '#721c24'];
+    
+    const data = [{
+        x: riskRanges,
+        y: counts,
+        type: 'bar',
+        marker: { color: colors },
+        text: counts.map(c => c.toLocaleString()),
+        textposition: 'auto'
+    }];
+    
+    const layout = {
+        title: '',
+        xaxis: { title: 'Risk Score Range' },
+        yaxis: { title: 'Transaction Count' },
+        margin: { t: 20, b: 50, l: 60, r: 20 }
+    };
+    
+    Plotly.newPlot('risk-distribution-chart', data, layout, {
+        displayModeBar: false,
+        responsive: true
+    });
+}
+
+function initializeAdvancedAnalyticsChart() {
+    // Start with correlation matrix
+    updateAdvancedAnalyticsChart('correlation');
+}
+
+function updateAdvancedAnalyticsChart(view) {
+    switch (view) {
+        case 'correlation':
+            showCorrelationMatrix();
+            break;
+        case 'cohort':
+            showCohortAnalysis();
+            break;
+        case 'funnel':
+            showFraudFunnel();
+            break;
+    }
+}
+
+function showCorrelationMatrix() {
+    const features = ['Amount', 'Hour', 'Merchant Risk', 'Geo Risk', 'Device Risk', 'Velocity'];
+    const correlationData = [
+        [1.00, 0.12, 0.34, 0.28, 0.15, 0.67],
+        [0.12, 1.00, 0.08, 0.19, 0.25, 0.14],
+        [0.34, 0.08, 1.00, 0.45, 0.32, 0.28],
+        [0.28, 0.19, 0.45, 1.00, 0.23, 0.31],
+        [0.15, 0.25, 0.32, 0.23, 1.00, 0.18],
+        [0.67, 0.14, 0.28, 0.31, 0.18, 1.00]
+    ];
+    
+    const data = [{
+        z: correlationData,
+        x: features,
+        y: features,
+        type: 'heatmap',
+        colorscale: 'RdBu',
+        zmid: 0,
+        showscale: true
+    }];
+    
+    const layout = {
+        title: 'Feature Correlation Matrix',
+        xaxis: { title: 'Features' },
+        yaxis: { title: 'Features' },
+        margin: { t: 50, b: 100, l: 100, r: 50 }
+    };
+    
+    Plotly.newPlot('advanced-analytics-chart', data, layout, {
+        displayModeBar: false,
+        responsive: true
+    });
+}
+
+function showCohortAnalysis() {
+    // Sample cohort data
+    const weeks = ['Week 1', 'Week 2', 'Week 3', 'Week 4'];
+    const cohorts = ['Jan 2025', 'Feb 2025', 'Mar 2025', 'Apr 2025'];
+    
+    const retentionData = [
+        [100, 85, 72, 68],
+        [100, 88, 75, 71],
+        [100, 90, 78, 74],
+        [100, 87, 76, 0] // Current month incomplete
+    ];
+    
+    const data = [{
+        z: retentionData,
+        x: weeks,
+        y: cohorts,
+        type: 'heatmap',
+        colorscale: 'Viridis',
+        showscale: true
+    }];
+    
+    const layout = {
+        title: 'Customer Transaction Cohort Analysis (%)',
+        xaxis: { title: 'Period' },
+        yaxis: { title: 'Cohort' },
+        margin: { t: 50, b: 50, l: 100, r: 50 }
+    };
+    
+    Plotly.newPlot('advanced-analytics-chart', data, layout, {
+        displayModeBar: false,
+        responsive: true
+    });
+}
+
+function showFraudFunnel() {
+    const stages = ['Total Transactions', 'Flagged for Review', 'Investigated', 'Confirmed Fraud', 'Blocked'];
+    const values = [10000, 500, 300, 150, 140];
+    const colors = ['#1f77b4', '#ff7f0e', '#2ca02c', '#d62728', '#9467bd'];
+    
+    const data = [{
+        type: 'funnel',
+        y: stages,
+        x: values,
+        marker: { color: colors },
+        textinfo: 'value+percent initial'
+    }];
+    
+    const layout = {
+        title: 'Fraud Detection Funnel',
+        margin: { t: 50, b: 50, l: 150, r: 50 }
+    };
+    
+    Plotly.newPlot('advanced-analytics-chart', data, layout, {
+        displayModeBar: false,
+        responsive: true
+    });
+}
+
+function updatePerformanceTable(performanceData) {
+    const tbody = document.getElementById('performance-table-body');
+    
+    const metrics = [
+        { name: 'Accuracy', current: 94.2, previous: 93.0, target: 95.0, unit: '%' },
+        { name: 'Precision', current: 89.7, previous: 88.5, target: 90.0, unit: '%' },
+        { name: 'Recall', current: 91.3, previous: 90.1, target: 92.0, unit: '%' },
+        { name: 'F1-Score', current: 90.5, previous: 89.3, target: 91.0, unit: '%' },
+        { name: 'False Positive Rate', current: 4.2, previous: 5.1, target: 5.0, unit: '%' },
+        { name: 'Response Time', current: 85, previous: 92, target: 100, unit: 'ms' },
+        { name: 'Fraud Amount Prevented', current: 2.3, previous: 1.9, target: 2.0, unit: 'M' }
+    ];
+    
+    tbody.innerHTML = metrics.map(metric => {
+        const change = metric.current - metric.previous;
+        const changePercent = (change / metric.previous * 100).toFixed(1);
+        const isPositive = change > 0;
+        const isGood = (metric.name === 'False Positive Rate' || metric.name === 'Response Time') ? !isPositive : isPositive;
+        const meetingTarget = metric.name === 'False Positive Rate' || metric.name === 'Response Time' ? 
+            metric.current <= metric.target : metric.current >= metric.target;
+        
+        return `
+            <tr>
+                <td><strong>${metric.name}</strong></td>
+                <td>${metric.current}${metric.unit}</td>
+                <td>${metric.previous}${metric.unit}</td>
+                <td>
+                    <span class="badge bg-${isGood ? 'success' : 'danger'}">
+                        ${isPositive ? '+' : ''}${change.toFixed(1)}${metric.unit} (${isPositive ? '+' : ''}${changePercent}%)
+                    </span>
+                </td>
+                <td>
+                    <i class="fas fa-arrow-${isGood ? 'up text-success' : 'down text-danger'}"></i>
+                </td>
+                <td>${metric.target}${metric.unit}</td>
+                <td>
+                    <span class="badge bg-${meetingTarget ? 'success' : 'warning'}">
+                        ${meetingTarget ? 'On Target' : 'Below Target'}
+                    </span>
+                </td>
+            </tr>
+        `;
+    }).join('');
+}
+
+function updateFraudTrendsChart(view) {
+    // Generate different data based on view
+    let xData, yData, title;
+    
+    switch (view) {
+        case 'daily':
+            xData = Array.from({length: 30}, (_, i) => {
+                const date = new Date();
+                date.setDate(date.getDate() - (29 - i));
+                return date.toLocaleDateString();
+            });
+            yData = Array.from({length: 30}, () => Math.floor(Math.random() * 50) + 10);
+            title = 'Daily Fraud Detection';
+            break;
+        case 'weekly':
+            xData = Array.from({length: 12}, (_, i) => `Week ${i + 1}`);
+            yData = Array.from({length: 12}, () => Math.floor(Math.random() * 300) + 100);
+            title = 'Weekly Fraud Detection';
+            break;
+        case 'monthly':
+            xData = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'];
+            yData = Array.from({length: 6}, () => Math.floor(Math.random() * 1000) + 500);
+            title = 'Monthly Fraud Detection';
+            break;
+    }
+    
+    const trace = {
+        x: xData,
+        y: yData,
+        type: 'scatter',
+        mode: 'lines+markers',
+        line: { color: '#dc3545', width: 2 },
+        marker: { size: 6 }
+    };
+    
+    const layout = {
+        title: title,
+        xaxis: { title: 'Period' },
+        yaxis: { title: 'Fraud Count' },
+        margin: { l: 50, r: 50, t: 50, b: 50 }
+    };
+    
+    Plotly.newPlot('fraud-trends-chart', [trace], layout, {
+        displayModeBar: false,
+        responsive: true
+    });
+}
+
+function generateReport() {
+    const reportType = document.getElementById('export-type').value;
+    const format = document.querySelector('input[name="format"]:checked').value;
+    const includeCharts = document.getElementById('include-charts').checked;
+    const recipients = document.getElementById('email-recipients').value;
+    
+    // Show loading state
+    const btn = document.getElementById('generate-report');
+    const originalText = btn.innerHTML;
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Generating...';
+    btn.disabled = true;
+    
+    // Prepare export data
+    const exportData = {
+        type: reportType,
+        format: format,
+        include_charts: includeCharts,
+        date_range: {
+            from: document.getElementById('date-from').value,
+            to: document.getElementById('date-to').value
+        },
+        recipients: recipients ? recipients.split(',').map(email => email.trim()) : []
+    };
+    
+    // Make API call
+    fetch('/api/analytics/export', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(exportData)
+    })
+    .then(response => {
+        if (response.ok) {
+            if (format === 'pdf' || format === 'excel') {
+                return response.blob();
+            } else {
+                return response.text();
+            }
+        }
+        throw new Error('Export failed');
+    })
+    .then(data => {
+        if (format === 'pdf' || format === 'excel') {
+            // Download file
+            const blob = new Blob([data]);
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `fraud_report_${new Date().toISOString().split('T')[0]}.${format}`;
+            document.body.appendChild(a);
+            a.click();
+            window.URL.revokeObjectURL(url);
+            document.body.removeChild(a);
+        } else {
+            // CSV - create downloadable file
+            const blob = new Blob([data], { type: 'text/csv' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `fraud_report_${new Date().toISOString().split('T')[0]}.csv`;
+            document.body.appendChild(a);
+            a.click();
+            window.URL.revokeObjectURL(url);
+            document.body.removeChild(a);
+        }
+        
+        showNotification('Report generated successfully!', 'success');
+        
+        // Close modal
+        const modal = bootstrap.Modal.getInstance(document.getElementById('exportModal'));
+        modal.hide();
+    })
+    .catch(error => {
+        console.error('Export failed:', error);
+        showNotification('Failed to generate report', 'error');
+    })
+    .finally(() => {
+        // Restore button state
+        btn.innerHTML = originalText;
+        btn.disabled = false;
+    });
+}
+
+function showNotification(message, type) {
+    // Create notification element
+    const alertDiv = document.createElement('div');
+    alertDiv.className = `alert alert-${type} alert-dismissible fade show position-fixed`;
+    alertDiv.style.cssText = 'top: 20px; right: 20px; z-index: 1060; min-width: 300px;';
+    
+    alertDiv.innerHTML = `
+        ${message}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    `;
+    
+    document.body.appendChild(alertDiv);
+    
+    // Auto-remove after 5 seconds
+    setTimeout(() => {
+        if (alertDiv.parentNode) {
+            alertDiv.remove();
+        }
+    }, 5000);
+}
+
+function updateCharts(chartData) {
+    // Update charts with new data if provided
+    if (chartData) {
+        // Update specific charts based on the data structure
+        console.log('Updating charts with new data:', chartData);
+    }
+}
+</script>
+{% endblock %}{% extends "base.html" %}
+
+{% block title %}Analytics & Reports - Financial Fraud Detection{% endblock %}
+
+{% block extra_css %}
+<link href="{{ url_for('static', filename='css/dashboard.css') }}" rel="stylesheet">
+<style>
+.report-card {
+    border: none;
+    border-radius: 0.5rem;
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+    transition: all 0.3s ease;
+    margin-bottom: 1.5rem;
+}
+
+.report-card:hover {
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+    transform: translateY(-2px);
+}
+
+.chart-container {
+    background: white;
+    border-radius: 0.5rem;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+}
+
+.metric-box {
+    text-align: center;
+    padding: 1rem;
+    border-radius: 0.375rem;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    margin-bottom: 1rem;
+}
+
+.metric-value {
+    font-size: 2rem;
+    font-weight: bold;
+    margin-bottom: 0.25rem;
+}
+
+.metric-label {
+    font-size: 0.875rem;
+    opacity: 0.9;
+}
+
+.trend-indicator {
+    font-size: 0.75rem;
+    margin-top: 0.25rem;
+}
+
+.trend-up {
+    color: #28a745;
+}
+
+.trend-down {
+    color: #dc3545;
+}
+
+.export-section {
+    background: #f8f9fa;
+    border-radius: 0.5rem;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.date-range-picker {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+@media (max-width: 768px) {
+    .date-range-picker {
+        flex-direction: column;
+        align-items: stretch;
+    }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">
+        <i class="fas fa-chart-bar me-2"></i>Analytics & Reports
+    </h1>
+    <div class="btn-toolbar mb-2 mb-md-0">
+        <div class="btn-group me-2">
+            <button type="button" class="btn btn-sm btn-outline-secondary" id="refresh-reports">
+                <i class="fas fa-sync-alt"></i> Refresh
+            </button>
+            <button type="button" class="btn btn-sm btn-outline-secondary dropdown-toggle" data-bs-toggle="dropdown">
+                <i class="fas fa-calendar"></i> Time Range
+            </button>
+            <ul class="dropdown-menu">
+                <li><a class="dropdown-item time-range" href="#" data-range="24h">Last 24 Hours</a></li>
+                <li><a class="dropdown-item time-range" href="#" data-range="7d">Last 7 Days</a></li>
+                <li><a class="dropdown-item time-range" href="#" data-range="30d">Last 30 Days</a></li>
+                <li><a class="dropdown-item time-range" href="#" data-range="90d">Last 90 Days</a></li>
+                <li><a class="dropdown-item time-range" href="#" data-range="custom">Custom Range</a></li>
+            </ul>
+        </div>
+        <button type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#exportModal">
+            <i class="fas fa-download"></i> Export Report
+        </button>
+    </div>
+</div>
+
+<!-- Date Range Selector -->
+<div class="card mb-4">
+    <div class="card-body">
+        <div class="date-range-picker">
+            <div class="form-group">
+                <label class="form-label">From</label>
+                <input type="date" class="form-control" id="date-from" value="">
+            </div>
+            <div class="form-group">
+                <label class="form-label">To</label>
+                <input type="date" class="form-control" id="date-to" value="">
+            </div>
+            <div class="form-group align-self-end">
+                <button class="btn btn-primary" id="apply-date-range">
+                    <i class="fas fa-filter"></i> Apply
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Key Metrics Overview -->
+<div class="row mb-4">
+    <div class="col-lg-3 col-md-6 mb-3">
+        <div class="metric-box">
+            <div class="metric-value" id="total-transactions-metric">0</div>
+            <div class="metric-label">Total Transactions</div>
+            <div class="trend-indicator">
+                <i class="fas fa-arrow-up trend-up"></i>
+                <span id="transactions-trend">+12.5%</span> vs last period
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-3 col-md-6 mb-3">
+        <div class="metric-box">
+            <div class="metric-value" id="fraud-rate-metric">0%</div>
+            <div class="metric-label">Fraud Detection Rate</div>
+            <div class="trend-indicator">
+                <i class="fas fa-arrow-down trend-down"></i>
+                <span id="fraud-rate-trend">-2.1%</span> vs last period
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-3 col-md-6 mb-3">
+        <div class="metric-box">
+            <div class="metric-value" id="amount-saved-metric">$0</div>
+            <div class="metric-label">Fraud Prevented</div>
+            <div class="trend-indicator">
+                <i class="fas fa-arrow-up trend-up"></i>
+                <span id="amount-saved-trend">+18.3%</span> vs last period
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-3 col-md-6 mb-3">
+        <div class="metric-box">
+            <div class="metric-value" id="accuracy-metric">0%</div>
+            <div class="metric-label">Model Accuracy</div>
+            <div class="trend-indicator">
+                <i class="fas fa-arrow-up trend-up"></i>
+                <span id="accuracy-trend">+1.2%</span> vs last period
+            </div>
+        </div>
+    </div>
+</div>
