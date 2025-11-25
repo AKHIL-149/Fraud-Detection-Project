@@ -1,7 +1,7 @@
 # Dynamic Fraud Detection: An Adaptive Model for Evolving Financial Datasets and Emerging Fraud Tactics
 
 ## Overview
-This repository contains the implementation of an adaptive fraud detection model designed to handle evolving financial datasets and emerging fraud tactics. Developed as part of the DS-630 Machine Learning course at Saint Peter’s University, this project leverages advanced machine learning techniques to capture and adapt to the dynamic nature of financial data.
+This repository contains the implementation of an adaptive fraud detection model designed to handle evolving financial datasets and emerging fraud tactics. This project leverages advanced machine learning techniques to capture and adapt to the dynamic nature of financial data.
 
 ## Table of Contents
 - [Introduction](#introduction)
