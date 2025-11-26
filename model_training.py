@@ -442,6 +442,17 @@ if __name__ == "__main__":
     trainer.save_best_model()
     trainer.save_all_models()
 
+    # Save preprocessor for API use
+    import os
+    os.makedirs('models', exist_ok=True)
+    preprocessor_data = {
+        'scaler': preprocessor.scaler,
+        'feature_columns': preprocessor.feature_columns,
+        'label_encoders': preprocessor.label_encoders
+    }
+    joblib.dump(preprocessor_data, 'models/preprocessor.pkl')
+    print("Preprocessor saved to: models/preprocessor.pkl")
+
     print("\n" + "=" * 80)
     print("MODEL TRAINING COMPLETE")
     print("=" * 80)

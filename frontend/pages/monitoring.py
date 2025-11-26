@@ -13,7 +13,31 @@ import requests
 from datetime import datetime, timedelta
 import time
 import json
-from . import COMMON_STYLE, ENDPOINTS, PAGE_CONFIG
+import sys
+import os
+
+# Add parent directory to path for imports
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
+# Import configuration - use try/except for compatibility
+try:
+    from config import API_BASE_URL
+    ENDPOINTS = {"transactions": f"{API_BASE_URL}/monitoring/transactions"}
+except ImportError:
+    ENDPOINTS = {"transactions": "http://localhost:5000/api/monitoring/transactions"}
+
+PAGE_CONFIG = {
+    "page_title": "FraudGuard - Monitoring",
+    "page_icon": "📊",
+    "layout": "wide"
+}
+
+COMMON_STYLE = """
+<style>
+.main-header { font-size: 2.5rem; font-weight: bold; color: #1f77b4; }
+.metric-card { background-color: #f0f2f6; padding: 1rem; border-radius: 0.5rem; }
+</style>
+"""
 
 class MonitoringPage:
     def __init__(self):

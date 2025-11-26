@@ -9,7 +9,7 @@ __author__ = "Fraud Detection Team"
 # Page configuration
 PAGE_CONFIG = {
     "page_title": "FraudGuard Dashboard",
-    "page_icon": "🛡️",
+    "page_icon": "🔒",
     "layout": "wide",
     "initial_sidebar_state": "expanded"
 }
