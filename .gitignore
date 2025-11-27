@@ -43,6 +43,11 @@ detection_data/*.csv
 models/*.pkl
 !models/.gitkeep
 
+# Database files
+*.db
+*.sqlite
+*.sqlite3
+
 # Temporary and output files
 *.txt
 !requirements.txt

@@ -1,0 +1,223 @@
+{% extends "base.html" %}
+
+{% block title %}Alerts - FraudGuard{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <h1 class="mb-4"><i class="fas fa-bell"></i> Fraud Alerts</h1>
+    </div>
+</div>
+
+<!-- Alert Filters -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-3">
+                        <label>Severity Filter</label>
+                        <select id="severity-filter" class="form-select" onchange="loadAlerts()">
+                            <option value="">All Severities</option>
+                            <option value="critical">Critical</option>
+                            <option value="high">High</option>
+                            <option value="medium">Medium</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <label>Limit</label>
+                        <select id="limit-filter" class="form-select" onchange="loadAlerts()">
+                            <option value="10">10 Alerts</option>
+                            <option value="25" selected>25 Alerts</option>
+                            <option value="50">50 Alerts</option>
+                            <option value="100">100 Alerts</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3 d-flex align-items-end">
+                        <button class="btn btn-primary" onclick="loadAlerts()">
+                            <i class="fas fa-sync"></i> Refresh
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Alert Summary -->
+<div class="row mb-4">
+    <div class="col-md-3">
+        <div class="card border-danger">
+            <div class="card-body text-center">
+                <h5 class="card-title text-danger">Critical</h5>
+                <h2 id="critical-count">0</h2>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card border-warning">
+            <div class="card-body text-center">
+                <h5 class="card-title text-warning">High</h5>
+                <h2 id="high-count">0</h2>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card border-info">
+            <div class="card-body text-center">
+                <h5 class="card-title text-info">Medium</h5>
+                <h2 id="medium-count">0</h2>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card border-secondary">
+            <div class="card-body text-center">
+                <h5 class="card-title text-secondary">Total</h5>
+                <h2 id="total-count">0</h2>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Alerts List -->
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5><i class="fas fa-list"></i> Active Alerts</h5>
+            </div>
+            <div class="card-body">
+                <div id="alerts-container"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    async function loadAlerts() {
+        showLoading('alerts-container');
+
+        try {
+            const severity = document.getElementById('severity-filter').value;
+            const limit = document.getElementById('limit-filter').value;
+
+            let url = `/api/proxy/alerts?limit=${limit}`;
+            if (severity) {
+                url += `&severity=${severity}`;
+            }
+
+            const response = await fetch(url);
+            const data = await response.json();
+            const alerts = data.alerts || [];
+
+            displayAlerts(alerts);
+            updateAlertCounts(alerts);
+
+        } catch (error) {
+            console.error('Error loading alerts:', error);
+            showError('alerts-container', 'Could not load alerts. Please ensure the API is running.');
+        }
+    }
+
+    function displayAlerts(alerts) {
+        const container = document.getElementById('alerts-container');
+
+        if (!alerts || alerts.length === 0) {
+            container.innerHTML = `
+                <div class="alert alert-info">
+                    <i class="fas fa-info-circle"></i> No alerts found.
+                    ${document.getElementById('severity-filter').value ? 'Try changing the severity filter or ' : ''}
+                    run <code>python generate_sample_data.py</code> to populate the database with sample predictions.
+                </div>`;
+            return;
+        }
+
+        let html = '';
+        alerts.forEach(alert => {
+            const severityColor = {
+                'critical': 'danger',
+                'high': 'warning',
+                'medium': 'info',
+                'low': 'secondary'
+            }[alert.severity] || 'secondary';
+
+            const severityIcon = {
+                'critical': 'fa-exclamation-circle',
+                'high': 'fa-exclamation-triangle',
+                'medium': 'fa-info-circle',
+                'low': 'fa-check-circle'
+            }[alert.severity] || 'fa-bell';
+
+            html += `
+                <div class="card mb-3 border-${severityColor}">
+                    <div class="card-header bg-${severityColor} text-white">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <h6 class="mb-0">
+                                <i class="fas ${severityIcon}"></i> ${alert.title}
+                            </h6>
+                            <span class="badge bg-light text-dark">${alert.severity.toUpperCase()}</span>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-8">
+                                <p class="mb-2"><strong>Description:</strong> ${alert.description}</p>
+                                <p class="mb-2"><strong>Transaction ID:</strong> <code>${alert.transaction_id}</code></p>
+                                <p class="mb-2"><strong>Amount:</strong> ${formatCurrency(alert.amount)}</p>
+                                <p class="mb-2"><strong>Location:</strong> ${alert.merchant_city || 'N/A'}, ${alert.merchant_state || 'N/A'}</p>
+                                <p class="mb-0"><strong>Timestamp:</strong> ${new Date(alert.timestamp).toLocaleString()}</p>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="text-center">
+                                    <h5>Risk Score</h5>
+                                    <div class="progress" style="height: 30px;">
+                                        <div class="progress-bar bg-${severityColor}" role="progressbar"
+                                             style="width: ${alert.risk_score * 100}%"
+                                             aria-valuenow="${alert.risk_score * 100}"
+                                             aria-valuemin="0"
+                                             aria-valuemax="100">
+                                            ${(alert.risk_score * 100).toFixed(1)}%
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        });
+
+        container.innerHTML = html;
+    }
+
+    function updateAlertCounts(alerts) {
+        const counts = {
+            critical: 0,
+            high: 0,
+            medium: 0,
+            total: alerts.length
+        };
+
+        alerts.forEach(alert => {
+            if (counts.hasOwnProperty(alert.severity)) {
+                counts[alert.severity]++;
+            }
+        });
+
+        document.getElementById('critical-count').textContent = counts.critical;
+        document.getElementById('high-count').textContent = counts.high;
+        document.getElementById('medium-count').textContent = counts.medium;
+        document.getElementById('total-count').textContent = counts.total;
+    }
+
+    // Load alerts on page load
+    document.addEventListener('DOMContentLoaded', loadAlerts);
+
+    // Auto-refresh every 30 seconds
+    setInterval(loadAlerts, 30000);
+</script>
+{% endblock %}

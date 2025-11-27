@@ -34,8 +34,182 @@ PAGE_CONFIG = {
 
 COMMON_STYLE = """
 <style>
-.main-header { font-size: 2.5rem; font-weight: bold; color: #1f77b4; }
-.metric-card { background-color: #f0f2f6; padding: 1rem; border-radius: 0.5rem; }
+/* Import Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+/* Global Styles */
+* {
+    font-family: 'Inter', sans-serif;
+}
+
+/* Main App Background */
+.main {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background-attachment: fixed;
+}
+
+/* Content Container */
+.block-container {
+    padding-top: 2rem;
+    padding-bottom: 2rem;
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 20px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    animation: fadeIn 0.6s ease-out;
+}
+
+/* Header Styling */
+.main-header {
+    font-size: 3rem;
+    font-weight: 800;
+    text-align: center;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 2rem;
+    animation: slideInDown 0.8s ease-out;
+}
+
+/* Sidebar Styling */
+[data-testid="stSidebar"] {
+    background: linear-gradient(180deg, #667eea 0%, #764ba2 100%);
+    padding: 2rem 1rem;
+}
+
+[data-testid="stSidebar"] * {
+    color: white !important;
+}
+
+/* Metric Cards */
+[data-testid="stMetric"] {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    padding: 1.5rem;
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+    transition: all 0.3s ease;
+    animation: fadeInUp 0.6s ease-out;
+}
+
+[data-testid="stMetric"]:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 40px rgba(102, 126, 234, 0.4);
+}
+
+[data-testid="stMetric"] label {
+    color: rgba(255, 255, 255, 0.9) !important;
+    font-weight: 600 !important;
+}
+
+[data-testid="stMetric"] [data-testid="stMetricValue"] {
+    color: white !important;
+    font-weight: 700 !important;
+    font-size: 2rem !important;
+}
+
+/* Buttons */
+.stButton > button {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    font-weight: 600;
+    padding: 0.75rem 2rem;
+    border-radius: 10px;
+    border: none;
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+    transition: all 0.3s ease;
+}
+
+.stButton > button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+}
+
+/* Input Fields */
+.stTextInput input, .stNumberInput input, .stSelectbox select {
+    border-radius: 10px;
+    border: 2px solid #e0e0e0;
+    padding: 0.75rem;
+    transition: all 0.3s ease;
+}
+
+.stTextInput input:focus, .stNumberInput input:focus, .stSelectbox select:focus {
+    border-color: #667eea;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+/* Headers */
+h1, h2, h3 {
+    color: #2d3748;
+    font-weight: 700;
+}
+
+/* Success/Error/Warning Messages */
+.stSuccess, .stError, .stWarning, .stInfo {
+    border-radius: 10px;
+    padding: 1rem;
+    animation: slideInLeft 0.5s ease-out;
+}
+
+/* Animations */
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes slideInDown {
+    from {
+        opacity: 0;
+        transform: translateY(-30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes slideInLeft {
+    from {
+        opacity: 0;
+        transform: translateX(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+}
+
+::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 10px;
+}
+
+/* Plotly Charts */
+.js-plotly-plot {
+    border-radius: 15px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+}
 </style>
 """
 
@@ -452,54 +626,75 @@ class MonitoringPage:
     def fetch_recent_transactions(self):
         """Fetch recent transactions"""
         try:
-            response = requests.get(f"{ENDPOINTS['transactions']}/recent?limit=10")
+            # Call the real API endpoint
+            api_url = "http://localhost:5000/api/dashboard/recent-transactions"
+            params = {'limit': 100}
+            response = requests.get(api_url, params=params, timeout=5)
+
             if response.status_code == 200:
-                return pd.DataFrame(response.json())
+                transactions_data = response.json().get('transactions', [])
+                if transactions_data:
+                    df = pd.DataFrame(transactions_data)
+
+                    # Map API fields to expected frontend fields
+                    df = df.rename(columns={
+                        'merchant_category': 'merchant_category'
+                    })
+
+                    # Add location field from merchant city/state
+                    if 'merchant_city' in df.columns and 'merchant_state' in df.columns:
+                        df['location'] = df.apply(
+                            lambda row: f"{row.get('merchant_city', 'Unknown')}, {row.get('merchant_state', 'Unknown')}"
+                            if pd.notna(row.get('merchant_city')) else 'Unknown',
+                            axis=1
+                        )
+                    else:
+                        df['location'] = 'Unknown'
+
+                    # Add user_id if not present
+                    if 'user_id' not in df.columns:
+                        df['user_id'] = 'N/A'
+
+                    # Map risk_score from fraud_probability if needed
+                    if 'risk_score' not in df.columns and 'fraud_probability' in df.columns:
+                        df['risk_score'] = df['fraud_probability']
+
+                    return df.head(10)  # Return only first 10 for display
+
+        except requests.RequestException as e:
+            st.warning(f"Could not fetch real-time transactions: {e}")
         except Exception as e:
-            st.error(f"Error fetching transactions: {e}")
-            
-        # Mock data
-        mock_transactions = []
-        for i in range(10):
-            mock_transactions.append({
-                'transaction_id': f'TXN_{datetime.now().strftime("%Y%m%d")}_{i:04d}',
-                'amount': np.random.uniform(10, 5000),
-                'user_id': f'USER_{np.random.randint(1000, 9999)}',
-                'merchant_category': np.random.choice(['grocery', 'gas', 'restaurant', 'online', 'retail']),
-                'location': np.random.choice(['New York', 'Los Angeles', 'Chicago', 'Houston']),
-                'risk_score': np.random.beta(2, 5),
-                'confidence': np.random.uniform(0.7, 0.95),
-                'timestamp': datetime.now() - timedelta(minutes=np.random.randint(0, 60))
-            })
-            
-        return pd.DataFrame(mock_transactions)
+            st.warning(f"Error processing transactions: {e}")
+
+        # Return empty dataframe if no data available
+        return pd.DataFrame(columns=[
+            'transaction_id', 'amount', 'user_id', 'merchant_category',
+            'location', 'risk_score', 'confidence', 'timestamp'
+        ])
         
     def fetch_active_alerts(self):
         """Fetch active alerts"""
         try:
-            response = requests.get(f"{ENDPOINTS['alerts']}/active")
+            # Call the real API endpoint
+            api_url = "http://localhost:5000/api/dashboard/alerts"
+            params = {'limit': 20}
+            response = requests.get(api_url, params=params, timeout=5)
+
             if response.status_code == 200:
-                return pd.DataFrame(response.json())
+                alerts_data = response.json().get('alerts', [])
+                if alerts_data:
+                    return pd.DataFrame(alerts_data).head(10)
+
+        except requests.RequestException as e:
+            st.warning(f"Could not fetch active alerts: {e}")
         except Exception as e:
-            st.error(f"Error fetching alerts: {e}")
-            
-        # Mock data
-        mock_alerts = []
-        severities = ['critical', 'high', 'medium', 'low']
-        
-        for i in range(5):
-            severity = np.random.choice(severities, p=[0.1, 0.3, 0.4, 0.2])
-            mock_alerts.append({
-                'id': f'ALERT_{i:04d}',
-                'title': f'Fraud Detection Alert #{i+1}',
-                'description': f'High-risk transaction detected with unusual patterns',
-                'severity': severity,
-                'transaction_id': f'TXN_{datetime.now().strftime("%Y%m%d")}_{i:04d}',
-                'risk_score': np.random.uniform(0.3, 0.95),
-                'timestamp': datetime.now() - timedelta(minutes=np.random.randint(0, 120))
-            })
-            
-        return pd.DataFrame(mock_alerts)
+            st.warning(f"Error processing alerts: {e}")
+
+        # Return empty dataframe if no data available
+        return pd.DataFrame(columns=[
+            'id', 'title', 'description', 'severity',
+            'transaction_id', 'risk_score', 'timestamp'
+        ])
         
     def fetch_system_status(self):
         """Fetch system status"""

@@ -7,10 +7,12 @@ from flask import request, jsonify
 from app import app
 from app.model_loader import model_loader
 from app.feature_service import feature_service
+from app import database as db
 import pandas as pd
 import numpy as np
 from datetime import datetime
 import traceback
+import time
 
 @app.route('/')
 def index():
@@ -118,9 +120,14 @@ def predict_fraud():
         # Scale features
         features_scaled = preprocessor['scaler'].transform(feature_df)
 
+        # Track prediction time
+        start_time = time.time()
+
         # Make prediction
         prediction = model.predict(features_scaled)[0]
         probability = model.predict_proba(features_scaled)[0][1]
+
+        prediction_time_ms = (time.time() - start_time) * 1000
 
         # Determine risk level
         if probability >= 0.80:
@@ -130,17 +137,43 @@ def predict_fraud():
         else:
             risk_level = 'low'
 
+        # Generate transaction ID
+        transaction_id = transaction.get('transaction_id', f"txn_{int(datetime.now().timestamp() * 1000)}")
+
         # Prepare response
         result = {
             'is_fraud': bool(prediction),
             'fraud_probability': float(probability),
             'risk_level': risk_level,
             'risk_score': float(probability * 100),
-            'transaction_id': transaction.get('transaction_id', f"txn_{datetime.now().timestamp()}"),
+            'transaction_id': transaction_id,
             'amount': float(transaction['Amount']),
             'processed_at': datetime.now().isoformat(),
             'recommendation': _get_recommendation(probability)
         }
+
+        # Save prediction to database
+        try:
+            db_record = {
+                'transaction_id': transaction_id,
+                'amount': float(transaction['Amount']),
+                'merchant_state': transaction.get('Merchant State'),
+                'merchant_city': transaction.get('Merchant City'),
+                'merchant_category': transaction.get('Merchant Category'),
+                'mcc': transaction.get('MCC'),
+                'use_chip': transaction.get('Use Chip'),
+                'user_id': transaction.get('User'),
+                'card_id': transaction.get('Card'),
+                'is_fraud': bool(prediction),
+                'fraud_probability': float(probability),
+                'risk_score': float(probability * 100),
+                'risk_level': risk_level,
+                'prediction_time_ms': prediction_time_ms,
+                'model_version': '1.0.0'
+            }
+            db.save_prediction(db_record)
+        except Exception as e:
+            app.logger.warning(f"Failed to save prediction to database: {str(e)}")
 
         app.logger.info(f"Prediction: {result['is_fraud']}, Probability: {probability:.4f}")
 
@@ -258,15 +291,129 @@ def reload_model():
 
 @app.route('/api/statistics', methods=['GET'])
 def get_statistics():
-    """Get API usage statistics"""
-    # In production, track these metrics properly
-    return jsonify({
-        'total_predictions': 0,
-        'fraud_detected': 0,
-        'average_response_time_ms': 0,
-        'model_version': '1.0.0',
-        'uptime': 'N/A'
-    }), 200
+    """Get API usage statistics from real predictions"""
+    try:
+        stats = db.get_fraud_statistics(hours=24)
+
+        total = stats.get('total', 0)
+        fraud_count = stats.get('fraud_count', 0)
+
+        return jsonify({
+            'total_predictions': total,
+            'fraud_detected': fraud_count,
+            'fraud_rate': (fraud_count / total * 100) if total > 0 else 0,
+            'amount_at_risk': stats.get('fraud_amount', 0),
+            'average_fraud_probability': stats.get('avg_fraud_prob', 0),
+            'model_version': '1.0.0',
+            'period_hours': 24
+        }), 200
+    except Exception as e:
+        app.logger.error(f"Statistics error: {str(e)}")
+        return jsonify({
+            'total_predictions': 0,
+            'fraud_detected': 0,
+            'fraud_rate': 0
+        }), 200
+
+# Dashboard endpoints for real-time data
+@app.route('/api/dashboard/alerts', methods=['GET'])
+def get_alerts():
+    """Get fraud alerts for dashboard"""
+    try:
+        severity = request.args.get('severity')
+        limit = int(request.args.get('limit', 50))
+
+        alerts = db.get_alerts(severity=severity, limit=limit)
+
+        # Transform for frontend
+        formatted_alerts = []
+        for alert in alerts:
+            severity_level = 'critical' if alert['fraud_probability'] >= 0.9 else \
+                           'high' if alert['fraud_probability'] >= 0.7 else 'medium'
+
+            formatted_alerts.append({
+                'id': alert['id'],
+                'transaction_id': alert['transaction_id'],
+                'title': f"Fraud Alert - {severity_level.upper()}",
+                'description': f"Transaction of ${alert['amount']:.2f} flagged with {alert['fraud_probability']:.1%} fraud probability",
+                'severity': severity_level,
+                'timestamp': alert['timestamp'],
+                'amount': alert['amount'],
+                'merchant_city': alert['merchant_city'],
+                'merchant_state': alert['merchant_state'],
+                'risk_score': alert['fraud_probability'],
+                'status': 'active'
+            })
+
+        return jsonify({'alerts': formatted_alerts}), 200
+
+    except Exception as e:
+        app.logger.error(f"Alerts error: {str(e)}")
+        return jsonify({'alerts': []}), 200
+
+@app.route('/api/dashboard/recent-transactions', methods=['GET'])
+def get_recent_transactions():
+    """Get recent transactions for monitoring dashboard"""
+    try:
+        limit = int(request.args.get('limit', 100))
+        predictions = db.get_recent_predictions(limit=limit)
+
+        # Format for frontend
+        transactions = []
+        for pred in predictions:
+            transactions.append({
+                'transaction_id': pred['transaction_id'],
+                'timestamp': pred['timestamp'],
+                'amount': pred['amount'],
+                'merchant_state': pred['merchant_state'],
+                'merchant_city': pred['merchant_city'],
+                'merchant_category': pred['merchant_category'],
+                'risk_score': pred['fraud_probability'],
+                'is_fraud': bool(pred['is_fraud']),
+                'risk_level': pred['risk_level'],
+                'confidence': pred['fraud_probability']
+            })
+
+        return jsonify({'transactions': transactions}), 200
+
+    except Exception as e:
+        app.logger.error(f"Recent transactions error: {str(e)}")
+        return jsonify({'transactions': []}), 200
+
+@app.route('/api/dashboard/hourly-stats', methods=['GET'])
+def get_hourly_stats():
+    """Get hourly statistics for charts"""
+    try:
+        hours = int(request.args.get('hours', 24))
+        stats = db.get_hourly_statistics(hours=hours)
+
+        return jsonify({'hourly_stats': stats}), 200
+
+    except Exception as e:
+        app.logger.error(f"Hourly stats error: {str(e)}")
+        return jsonify({'hourly_stats': []}), 200
+
+@app.route('/api/dashboard/risk-distribution', methods=['GET'])
+def get_risk_dist():
+    """Get risk level distribution"""
+    try:
+        distribution = db.get_risk_distribution()
+        return jsonify({'distribution': distribution}), 200
+
+    except Exception as e:
+        app.logger.error(f"Risk distribution error: {str(e)}")
+        return jsonify({'distribution': []}), 200
+
+@app.route('/api/dashboard/merchant-stats', methods=['GET'])
+def get_merchant_stats():
+    """Get merchant statistics"""
+    try:
+        stats = db.get_merchant_statistics()
+        return jsonify({'merchant_stats': stats}), 200
+
+    except Exception as e:
+        app.logger.error(f"Merchant stats error: {str(e)}")
+        return jsonify({'merchant_stats': []}), 200
 
 def _get_recommendation(probability):
     """Get action recommendation based on fraud probability"""

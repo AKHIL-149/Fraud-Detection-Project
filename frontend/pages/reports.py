@@ -36,8 +36,182 @@ PAGE_CONFIG = {
 
 COMMON_STYLE = """
 <style>
-.main-header { font-size: 2.5rem; font-weight: bold; color: #1f77b4; }
-.metric-card { background-color: #f0f2f6; padding: 1rem; border-radius: 0.5rem; }
+/* Import Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+/* Global Styles */
+* {
+    font-family: 'Inter', sans-serif;
+}
+
+/* Main App Background */
+.main {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background-attachment: fixed;
+}
+
+/* Content Container */
+.block-container {
+    padding-top: 2rem;
+    padding-bottom: 2rem;
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 20px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    animation: fadeIn 0.6s ease-out;
+}
+
+/* Header Styling */
+.main-header {
+    font-size: 3rem;
+    font-weight: 800;
+    text-align: center;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 2rem;
+    animation: slideInDown 0.8s ease-out;
+}
+
+/* Sidebar Styling */
+[data-testid="stSidebar"] {
+    background: linear-gradient(180deg, #667eea 0%, #764ba2 100%);
+    padding: 2rem 1rem;
+}
+
+[data-testid="stSidebar"] * {
+    color: white !important;
+}
+
+/* Metric Cards */
+[data-testid="stMetric"] {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    padding: 1.5rem;
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+    transition: all 0.3s ease;
+    animation: fadeInUp 0.6s ease-out;
+}
+
+[data-testid="stMetric"]:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 40px rgba(102, 126, 234, 0.4);
+}
+
+[data-testid="stMetric"] label {
+    color: rgba(255, 255, 255, 0.9) !important;
+    font-weight: 600 !important;
+}
+
+[data-testid="stMetric"] [data-testid="stMetricValue"] {
+    color: white !important;
+    font-weight: 700 !important;
+    font-size: 2rem !important;
+}
+
+/* Buttons */
+.stButton > button {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    font-weight: 600;
+    padding: 0.75rem 2rem;
+    border-radius: 10px;
+    border: none;
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+    transition: all 0.3s ease;
+}
+
+.stButton > button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+}
+
+/* Input Fields */
+.stTextInput input, .stNumberInput input, .stSelectbox select {
+    border-radius: 10px;
+    border: 2px solid #e0e0e0;
+    padding: 0.75rem;
+    transition: all 0.3s ease;
+}
+
+.stTextInput input:focus, .stNumberInput input:focus, .stSelectbox select:focus {
+    border-color: #667eea;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+/* Headers */
+h1, h2, h3 {
+    color: #2d3748;
+    font-weight: 700;
+}
+
+/* Success/Error/Warning Messages */
+.stSuccess, .stError, .stWarning, .stInfo {
+    border-radius: 10px;
+    padding: 1rem;
+    animation: slideInLeft 0.5s ease-out;
+}
+
+/* Animations */
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes slideInDown {
+    from {
+        opacity: 0;
+        transform: translateY(-30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes slideInLeft {
+    from {
+        opacity: 0;
+        transform: translateX(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+}
+
+::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 10px;
+}
+
+/* Plotly Charts */
+.js-plotly-plot {
+    border-radius: 15px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+}
 </style>
 """
 
@@ -756,16 +930,40 @@ class ReportsPage:
             
     def fetch_executive_summary(self):
         """Fetch executive summary data"""
-        # Mock data
+        try:
+            # Call the real API endpoint
+            api_url = "http://localhost:5000/api/statistics"
+            response = requests.get(api_url, timeout=5)
+
+            if response.status_code == 200:
+                stats = response.json()
+
+                return {
+                    'total_transactions': stats.get('total_predictions', 0),
+                    'fraud_detected': stats.get('fraud_detected', 0),
+                    'amount_saved': stats.get('amount_at_risk', 0),
+                    'fraud_rate': stats.get('fraud_rate', 0) / 100,  # Convert from percentage
+                    'txn_change': 0,  # Would need historical comparison
+                    'fraud_change': 0,
+                    'amount_change': 0,
+                    'rate_change': 0
+                }
+
+        except requests.RequestException as e:
+            st.warning(f"Could not fetch executive summary: {e}")
+        except Exception as e:
+            st.warning(f"Error processing executive summary: {e}")
+
+        # Return default values if API fails
         return {
-            'total_transactions': np.random.randint(50000, 100000),
-            'fraud_detected': np.random.randint(500, 2000),
-            'amount_saved': np.random.uniform(500000, 2000000),
-            'fraud_rate': np.random.uniform(0.01, 0.05),
-            'txn_change': np.random.randint(-5000, 10000),
-            'fraud_change': np.random.randint(-100, 200),
-            'amount_change': np.random.uniform(-100000, 300000),
-            'rate_change': np.random.uniform(-0.01, 0.02)
+            'total_transactions': 0,
+            'fraud_detected': 0,
+            'amount_saved': 0,
+            'fraud_rate': 0,
+            'txn_change': 0,
+            'fraud_change': 0,
+            'amount_change': 0,
+            'rate_change': 0
         }
         
     def fetch_fraud_trend(self):
@@ -791,48 +989,103 @@ class ReportsPage:
         
     def fetch_transaction_analysis(self):
         """Fetch transaction analysis data"""
-        # Mock transaction data
-        categories = ['grocery', 'gas', 'restaurant', 'online', 'retail', 'entertainment']
-        
-        data = []
-        for _ in range(5000):
-            is_fraud = np.random.choice([0, 1], p=[0.95, 0.05])
-            amount = np.random.lognormal(4, 1) if not is_fraud else np.random.lognormal(5, 1.5)
-            
-            data.append({
-                'transaction_id': f'TXN_{np.random.randint(100000, 999999)}',
-                'amount': amount,
-                'merchant_category': np.random.choice(categories),
-                'is_fraud': is_fraud,
-                'risk_score': np.random.beta(2, 8) if not is_fraud else np.random.beta(8, 2),
-                'user_id': f'USER_{np.random.randint(1000, 9999)}',
-                'timestamp': datetime.now() - timedelta(days=np.random.randint(0, 30))
-            })
-            
-        return pd.DataFrame(data)
+        try:
+            # Call the real API endpoint
+            api_url = "http://localhost:5000/api/dashboard/recent-transactions"
+            params = {'limit': 1000}  # Get more data for analysis
+            response = requests.get(api_url, params=params, timeout=5)
+
+            if response.status_code == 200:
+                transactions = response.json().get('transactions', [])
+                if transactions:
+                    df = pd.DataFrame(transactions)
+
+                    # Map is_fraud from boolean to int
+                    df['is_fraud'] = df['is_fraud'].astype(int)
+
+                    # Add user_id if not present
+                    if 'user_id' not in df.columns:
+                        df['user_id'] = 'N/A'
+
+                    # Ensure merchant_category exists
+                    if 'merchant_category' not in df.columns:
+                        df['merchant_category'] = 'Unknown'
+
+                    return df
+
+        except requests.RequestException as e:
+            st.warning(f"Could not fetch transaction data: {e}")
+        except Exception as e:
+            st.warning(f"Error processing transaction data: {e}")
+
+        # Return minimal mock data if API fails
+        return pd.DataFrame({
+            'transaction_id': ['TXN_000001'],
+            'amount': [100.0],
+            'merchant_category': ['Unknown'],
+            'is_fraud': [0],
+            'risk_score': [0.1],
+            'user_id': ['N/A'],
+            'timestamp': [datetime.now()]
+        })
         
     def fetch_geographic_analysis(self):
         """Fetch geographic analysis data"""
-        states = [
-            {'state_code': 'CA', 'state_name': 'California', 'city': 'Los Angeles'},
-            {'state_code': 'NY', 'state_name': 'New York', 'city': 'New York City'},
-            {'state_code': 'TX', 'state_name': 'Texas', 'city': 'Houston'},
-            {'state_code': 'FL', 'state_name': 'Florida', 'city': 'Miami'},
-            {'state_code': 'IL', 'state_name': 'Illinois', 'city': 'Chicago'},
-        ]
-        
-        data = []
-        for state in states:
-            for _ in range(100):
-                data.append({
-                    **state,
-                    'total_transactions': np.random.randint(1000, 5000),
-                    'fraud_count': np.random.randint(10, 100),
-                    'fraud_amount': np.random.uniform(5000, 50000),
-                    'fraud_rate': np.random.uniform(0.01, 0.08)
-                })
-                
-        return pd.DataFrame(data)
+        try:
+            # Call the real API endpoint
+            api_url = "http://localhost:5000/api/dashboard/merchant-stats"
+            response = requests.get(api_url, timeout=5)
+
+            if response.status_code == 200:
+                merchant_stats = response.json().get('merchant_stats', [])
+                if merchant_stats:
+                    df = pd.DataFrame(merchant_stats)
+
+                    # Add state_code mapping for common states
+                    state_code_map = {
+                        'California': 'CA', 'New York': 'NY', 'Texas': 'TX',
+                        'Florida': 'FL', 'Illinois': 'IL', 'Nevada': 'NV',
+                        'Delaware': 'DE', 'Pennsylvania': 'PA', 'Ohio': 'OH'
+                    }
+
+                    df['state_code'] = df['merchant_state'].map(state_code_map)
+                    df['state_name'] = df['merchant_state']
+                    df['city'] = df['merchant_city']
+
+                    # Calculate fraud_rate
+                    df['fraud_rate'] = df['fraud_count'] / df['transaction_count']
+
+                    # Rename columns to match expected format
+                    df = df.rename(columns={
+                        'total_amount': 'total_amount',
+                        'fraud_count': 'fraud_count'
+                    })
+
+                    # Add fraud_amount from avg_fraud_prob * total_amount (approximation)
+                    if 'avg_fraud_prob' in df.columns:
+                        df['fraud_amount'] = df['avg_fraud_prob'] * df['total_amount']
+                    else:
+                        df['fraud_amount'] = df['fraud_count'] * 1000  # Rough estimate
+
+                    df['total_transactions'] = df['transaction_count']
+
+                    return df
+
+        except requests.RequestException as e:
+            st.warning(f"Could not fetch geographic data: {e}")
+        except Exception as e:
+            st.warning(f"Error processing geographic data: {e}")
+
+        # Return minimal mock data if API fails
+        return pd.DataFrame({
+            'state_code': ['CA', 'NY', 'TX'],
+            'state_name': ['California', 'New York', 'Texas'],
+            'city': ['Los Angeles', 'New York', 'Houston'],
+            'total_transactions': [0, 0, 0],
+            'fraud_count': [0, 0, 0],
+            'fraud_amount': [0, 0, 0],
+            'fraud_rate': [0, 0, 0]
+        })
         
     def fetch_temporal_analysis(self):
         """Fetch temporal analysis data"""
@@ -854,20 +1107,40 @@ class ReportsPage:
         
     def fetch_risk_analysis(self):
         """Fetch risk analysis data"""
-        n_samples = 10000
-        
-        # Generate legitimate transactions
+        try:
+            # Call the real API endpoint for risk distribution
+            api_url = "http://localhost:5000/api/dashboard/recent-transactions"
+            params = {'limit': 10000}  # Get more data for risk analysis
+            response = requests.get(api_url, params=params, timeout=5)
+
+            if response.status_code == 200:
+                transactions = response.json().get('transactions', [])
+                if transactions:
+                    df = pd.DataFrame(transactions)
+
+                    # Create risk analysis dataframe
+                    risk_df = pd.DataFrame({
+                        'risk_score': df['risk_score'],
+                        'is_fraud': df['is_fraud'].astype(int)
+                    })
+
+                    return risk_df
+
+        except requests.RequestException as e:
+            st.warning(f"Could not fetch risk data: {e}")
+        except Exception as e:
+            st.warning(f"Error processing risk data: {e}")
+
+        # Return minimal mock data if API fails
+        n_samples = 1000
         legitimate = pd.DataFrame({
             'risk_score': np.random.beta(2, 8, int(n_samples * 0.95)),
             'is_fraud': 0
         })
-        
-        # Generate fraudulent transactions
         fraudulent = pd.DataFrame({
             'risk_score': np.random.beta(8, 2, int(n_samples * 0.05)),
             'is_fraud': 1
         })
-        
         return pd.concat([legitimate, fraudulent], ignore_index=True)
         
     def calculate_roc_curve(self, data):

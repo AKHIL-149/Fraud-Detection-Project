@@ -1,0 +1,226 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - FraudGuard{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <h1 class="mb-4"><i class="fas fa-tachometer-alt"></i> Fraud Detection Dashboard</h1>
+    </div>
+</div>
+
+<!-- Key Metrics -->
+<div class="row mb-4">
+    <div class="col-md-3">
+        <div class="card bg-primary text-white">
+            <div class="card-body">
+                <h5 class="card-title"><i class="fas fa-exchange-alt"></i> Total Transactions</h5>
+                <h2 id="total-transactions">-</h2>
+                <p class="card-text">Last 24 hours</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card bg-danger text-white">
+            <div class="card-body">
+                <h5 class="card-title"><i class="fas fa-exclamation-triangle"></i> Fraud Detected</h5>
+                <h2 id="fraud-detected">-</h2>
+                <p class="card-text">Cases flagged</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card bg-warning text-dark">
+            <div class="card-body">
+                <h5 class="card-title"><i class="fas fa-percentage"></i> Fraud Rate</h5>
+                <h2 id="fraud-rate">-</h2>
+                <p class="card-text">Detection rate</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card bg-success text-white">
+            <div class="card-body">
+                <h5 class="card-title"><i class="fas fa-dollar-sign"></i> Amount at Risk</h5>
+                <h2 id="amount-at-risk">-</h2>
+                <p class="card-text">Protected</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Charts Row -->
+<div class="row mb-4">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h5><i class="fas fa-chart-pie"></i> Risk Distribution</h5>
+            </div>
+            <div class="card-body">
+                <div id="risk-distribution-chart"></div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h5><i class="fas fa-chart-bar"></i> Transactions by Risk Level</h5>
+            </div>
+            <div class="card-body">
+                <div id="risk-levels-chart"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Recent Activity -->
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5><i class="fas fa-list"></i> Recent Transactions</h5>
+                <button class="btn btn-sm btn-primary" onclick="loadDashboardData()">
+                    <i class="fas fa-sync"></i> Refresh
+                </button>
+            </div>
+            <div class="card-body">
+                <div id="recent-transactions-table"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Load dashboard data
+    async function loadDashboardData() {
+        try {
+            // Fetch statistics
+            const statsResponse = await fetch('/api/proxy/statistics');
+            const stats = await statsResponse.json();
+
+            // Update metrics
+            document.getElementById('total-transactions').textContent = stats.total_predictions || 0;
+            document.getElementById('fraud-detected').textContent = stats.fraud_detected || 0;
+            document.getElementById('fraud-rate').textContent = (stats.fraud_rate || 0).toFixed(2) + '%';
+            document.getElementById('amount-at-risk').textContent = formatCurrency(stats.amount_at_risk || 0);
+
+            // Fetch recent transactions
+            const transResponse = await fetch('/api/proxy/transactions?limit=10');
+            const transData = await transResponse.json();
+            displayRecentTransactions(transData.transactions || []);
+
+            // Load charts
+            await loadRiskDistribution();
+            await loadRiskLevels();
+
+        } catch (error) {
+            console.error('Error loading dashboard data:', error);
+            showError('recent-transactions-table', 'Could not load dashboard data. Please ensure the API is running.');
+        }
+    }
+
+    // Display recent transactions
+    function displayRecentTransactions(transactions) {
+        const container = document.getElementById('recent-transactions-table');
+
+        if (!transactions || transactions.length === 0) {
+            container.innerHTML = '<div class="alert alert-info">No transactions available. Run generate_sample_data.py to populate the database.</div>';
+            return;
+        }
+
+        let html = '<div class="table-responsive"><table class="table table-hover">';
+        html += '<thead><tr><th>Transaction ID</th><th>Amount</th><th>Risk Score</th><th>Status</th><th>Timestamp</th></tr></thead><tbody>';
+
+        transactions.forEach(txn => {
+            const riskClass = txn.risk_score >= 0.7 ? 'danger' : (txn.risk_score >= 0.5 ? 'warning' : 'success');
+            const statusBadge = txn.is_fraud ? '<span class="badge bg-danger">FRAUD</span>' : '<span class="badge bg-success">LEGITIMATE</span>';
+
+            html += `<tr>
+                <td><code>${txn.transaction_id}</code></td>
+                <td>${formatCurrency(txn.amount)}</td>
+                <td><span class="badge bg-${riskClass}">${(txn.risk_score * 100).toFixed(1)}%</span></td>
+                <td>${statusBadge}</td>
+                <td>${new Date(txn.timestamp).toLocaleString()}</td>
+            </tr>`;
+        });
+
+        html += '</tbody></table></div>';
+        container.innerHTML = html;
+    }
+
+    // Load risk distribution chart
+    async function loadRiskDistribution() {
+        try {
+            const response = await fetch('/api/proxy/risk-distribution');
+            const data = await response.json();
+            const distribution = data.distribution || [];
+
+            if (distribution.length === 0) {
+                document.getElementById('risk-distribution-chart').innerHTML = '<div class="alert alert-info">No data available</div>';
+                return;
+            }
+
+            const chartData = [{
+                values: distribution.map(d => d.count),
+                labels: distribution.map(d => d.risk_level.toUpperCase()),
+                type: 'pie',
+                marker: {
+                    colors: ['#28a745', '#ffc107', '#dc3545']
+                }
+            }];
+
+            const layout = {
+                height: 300,
+                margin: { t: 0, b: 0, l: 0, r: 0 }
+            };
+
+            Plotly.newPlot('risk-distribution-chart', chartData, layout);
+        } catch (error) {
+            console.error('Error loading risk distribution:', error);
+        }
+    }
+
+    // Load risk levels bar chart
+    async function loadRiskLevels() {
+        try {
+            const response = await fetch('/api/proxy/risk-distribution');
+            const data = await response.json();
+            const distribution = data.distribution || [];
+
+            if (distribution.length === 0) {
+                document.getElementById('risk-levels-chart').innerHTML = '<div class="alert alert-info">No data available</div>';
+                return;
+            }
+
+            const chartData = [{
+                x: distribution.map(d => d.risk_level.toUpperCase()),
+                y: distribution.map(d => d.count),
+                type: 'bar',
+                marker: {
+                    color: ['#28a745', '#ffc107', '#dc3545']
+                }
+            }];
+
+            const layout = {
+                height: 300,
+                margin: { t: 20, b: 40, l: 40, r: 20 },
+                yaxis: { title: 'Transaction Count' },
+                xaxis: { title: 'Risk Level' }
+            };
+
+            Plotly.newPlot('risk-levels-chart', chartData, layout);
+        } catch (error) {
+            console.error('Error loading risk levels:', error);
+        }
+    }
+
+    // Load data on page load
+    document.addEventListener('DOMContentLoaded', loadDashboardData);
+
+    // Auto-refresh every 30 seconds
+    setInterval(loadDashboardData, 30000);
+</script>
+{% endblock %}

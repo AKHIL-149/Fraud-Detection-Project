@@ -1,0 +1,136 @@
+{% extends "base.html" %}
+
+{% block title %}Reports - FraudGuard{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <h1 class="mb-4"><i class="fas fa-file-alt"></i> Analytics & Reports</h1>
+    </div>
+</div>
+
+<!-- Summary Cards -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5><i class="fas fa-chart-bar"></i> Merchant Statistics</h5>
+            </div>
+            <div class="card-body">
+                <div id="merchant-stats-chart"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Detailed Tables -->
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5><i class="fas fa-table"></i> Merchant Analysis</h5>
+                <button class="btn btn-sm btn-primary" onclick="loadReports()">
+                    <i class="fas fa-sync"></i> Refresh
+                </button>
+            </div>
+            <div class="card-body">
+                <div id="merchant-table"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    async function loadReports() {
+        try {
+            const response = await fetch('/api/proxy/merchant-stats');
+            const data = await response.json();
+            const stats = data.merchant_stats || [];
+
+            displayMerchantChart(stats);
+            displayMerchantTable(stats);
+
+        } catch (error) {
+            console.error('Error loading reports:', error);
+            showError('merchant-stats-chart', 'Could not load report data.');
+        }
+    }
+
+    function displayMerchantChart(stats) {
+        if (!stats || stats.length === 0) {
+            document.getElementById('merchant-stats-chart').innerHTML = '<div class="alert alert-info">No merchant statistics available. Run generate_sample_data.py to populate the database.</div>';
+            return;
+        }
+
+        // Take top 10 merchants by transaction count
+        const topMerchants = stats.slice(0, 10);
+
+        const chartData = [{
+            x: topMerchants.map(s => s.fraud_count),
+            y: topMerchants.map(s => `${s.merchant_city}, ${s.merchant_state}`),
+            type: 'bar',
+            orientation: 'h',
+            marker: {
+                color: topMerchants.map(s => {
+                    const fraudRate = s.fraud_count / s.transaction_count;
+                    return fraudRate > 0.1 ? '#dc3545' : (fraudRate > 0.05 ? '#ffc107' : '#28a745');
+                })
+            }
+        }];
+
+        const layout = {
+            title: 'Top 10 Locations by Fraud Count',
+            xaxis: { title: 'Fraud Transactions' },
+            yaxis: { title: 'Location' },
+            height: 400,
+            margin: { l: 150 }
+        };
+
+        Plotly.newPlot('merchant-stats-chart', chartData, layout);
+    }
+
+    function displayMerchantTable(stats) {
+        const container = document.getElementById('merchant-table');
+
+        if (!stats || stats.length === 0) {
+            container.innerHTML = '<div class="alert alert-info">No merchant data available.</div>';
+            return;
+        }
+
+        let html = '<div class="table-responsive"><table class="table table-striped table-hover">';
+        html += `<thead>
+            <tr>
+                <th>Location</th>
+                <th>Total Transactions</th>
+                <th>Fraud Count</th>
+                <th>Fraud Rate</th>
+                <th>Total Amount</th>
+                <th>Avg Fraud Probability</th>
+            </tr>
+        </thead><tbody>`;
+
+        stats.forEach(stat => {
+            const fraudRate = (stat.fraud_count / stat.transaction_count * 100) || 0;
+            const rateClass = fraudRate > 10 ? 'danger' : (fraudRate > 5 ? 'warning' : 'success');
+
+            html += `<tr>
+                <td><strong>${stat.merchant_city}, ${stat.merchant_state}</strong></td>
+                <td>${stat.transaction_count.toLocaleString()}</td>
+                <td><span class="badge bg-danger">${stat.fraud_count}</span></td>
+                <td><span class="badge bg-${rateClass}">${fraudRate.toFixed(2)}%</span></td>
+                <td>${formatCurrency(stat.total_amount)}</td>
+                <td>${((stat.avg_fraud_prob || 0) * 100).toFixed(2)}%</td>
+            </tr>`;
+        });
+
+        html += '</tbody></table></div>';
+        container.innerHTML = html;
+    }
+
+    // Load reports on page load
+    document.addEventListener('DOMContentLoaded', loadReports);
+</script>
+{% endblock %}

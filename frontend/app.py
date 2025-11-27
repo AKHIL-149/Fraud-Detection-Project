@@ -23,33 +23,254 @@ st.set_page_config(
 # API configuration
 API_BASE_URL = "http://localhost:5000/api"
 
-# Custom CSS
+# Custom CSS - Enhanced Professional Styling
 st.markdown("""
     <style>
+    /* Import Google Fonts */
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+    /* Global Styles */
+    * {
+        font-family: 'Inter', sans-serif;
+    }
+
+    /* Main App Background */
+    .main {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        background-attachment: fixed;
+    }
+
+    /* Content Container */
+    .block-container {
+        padding-top: 2rem;
+        padding-bottom: 2rem;
+        background: rgba(255, 255, 255, 0.95);
+        border-radius: 20px;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        animation: fadeIn 0.6s ease-out;
+    }
+
+    /* Header Styling */
     .main-header {
-        font-size: 3rem;
-        font-weight: bold;
+        font-size: 3.5rem;
+        font-weight: 800;
         text-align: center;
-        color: #1f77b4;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
         margin-bottom: 2rem;
+        animation: slideInDown 0.8s ease-out;
+        letter-spacing: -1px;
     }
-    .metric-card {
-        background-color: #f0f2f6;
+
+    /* Sidebar Styling */
+    [data-testid="stSidebar"] {
+        background: linear-gradient(180deg, #667eea 0%, #764ba2 100%);
+        padding: 2rem 1rem;
+    }
+
+    [data-testid="stSidebar"] * {
+        color: white !important;
+    }
+
+    [data-testid="stSidebar"] h1,
+    [data-testid="stSidebar"] h2,
+    [data-testid="stSidebar"] h3 {
+        color: white !important;
+        font-weight: 700;
+    }
+
+    /* Metric Cards */
+    [data-testid="stMetric"] {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        padding: 1.5rem;
+        border-radius: 15px;
+        box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+        transition: all 0.3s ease;
+        animation: fadeInUp 0.6s ease-out;
+    }
+
+    [data-testid="stMetric"]:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 15px 40px rgba(102, 126, 234, 0.4);
+    }
+
+    [data-testid="stMetric"] label {
+        color: rgba(255, 255, 255, 0.9) !important;
+        font-weight: 600 !important;
+        font-size: 0.9rem !important;
+    }
+
+    [data-testid="stMetric"] [data-testid="stMetricValue"] {
+        color: white !important;
+        font-weight: 700 !important;
+        font-size: 2rem !important;
+    }
+
+    /* Buttons */
+    .stButton > button {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        font-weight: 600;
+        padding: 0.75rem 2rem;
+        border-radius: 10px;
+        border: none;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        transition: all 0.3s ease;
+        font-size: 1rem;
+    }
+
+    .stButton > button:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+    }
+
+    /* Input Fields */
+    .stTextInput input, .stNumberInput input, .stSelectbox select {
+        border-radius: 10px;
+        border: 2px solid #e0e0e0;
+        padding: 0.75rem;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+    }
+
+    .stTextInput input:focus, .stNumberInput input:focus, .stSelectbox select:focus {
+        border-color: #667eea;
+        box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    }
+
+    /* Form Container */
+    [data-testid="stForm"] {
+        background: white;
+        padding: 2rem;
+        border-radius: 15px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+        border: 1px solid #f0f0f0;
+    }
+
+    /* Headers in content */
+    h1, h2, h3 {
+        color: #2d3748;
+        font-weight: 700;
+    }
+
+    /* Success/Error/Warning Messages */
+    .stSuccess, .stError, .stWarning, .stInfo {
+        border-radius: 10px;
         padding: 1rem;
-        border-radius: 0.5rem;
-        border-left: 4px solid #1f77b4;
+        animation: slideInLeft 0.5s ease-out;
     }
+
+    /* Expander */
+    .streamlit-expanderHeader {
+        background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+        border-radius: 10px;
+        padding: 1rem;
+        font-weight: 600;
+    }
+
+    /* Divider */
+    hr {
+        border: none;
+        height: 2px;
+        background: linear-gradient(90deg, transparent, #667eea, transparent);
+        margin: 2rem 0;
+    }
+
+    /* Animations */
+    @keyframes fadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+    }
+
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    @keyframes slideInDown {
+        from {
+            opacity: 0;
+            transform: translateY(-30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    @keyframes slideInLeft {
+        from {
+            opacity: 0;
+            transform: translateX(-20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateX(0);
+        }
+    }
+
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar {
+        width: 10px;
+        height: 10px;
+    }
+
+    ::-webkit-scrollbar-track {
+        background: #f1f1f1;
+        border-radius: 10px;
+    }
+
+    ::-webkit-scrollbar-thumb {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border-radius: 10px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+        background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+    }
+
+    /* Risk Level Classes */
     .risk-low {
         color: #28a745;
         font-weight: bold;
     }
+
     .risk-medium {
         color: #ffc107;
         font-weight: bold;
     }
+
     .risk-high {
         color: #dc3545;
         font-weight: bold;
+    }
+
+    /* Code blocks */
+    code {
+        background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+        padding: 0.25rem 0.5rem;
+        border-radius: 5px;
+        font-family: 'Courier New', monospace;
+    }
+
+    /* Tables */
+    table {
+        border-radius: 10px;
+        overflow: hidden;
+    }
+
+    /* Plotly Charts */
+    .js-plotly-plot {
+        border-radius: 15px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
     }
     </style>
 """, unsafe_allow_html=True)

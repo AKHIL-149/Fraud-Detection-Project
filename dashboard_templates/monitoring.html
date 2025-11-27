@@ -1,0 +1,217 @@
+{% extends "base.html" %}
+
+{% block title %}Monitoring - FraudGuard{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <h1 class="mb-4"><i class="fas fa-chart-line"></i> Real-Time Monitoring</h1>
+    </div>
+</div>
+
+<!-- Live Metrics -->
+<div class="row mb-4">
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-body text-center">
+                <h5>Recent Transactions</h5>
+                <h2 id="transaction-count">0</h2>
+                <p class="text-muted">Last 100 transactions</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-body text-center">
+                <h5>Fraud Rate</h5>
+                <h2 id="current-fraud-rate">0%</h2>
+                <p class="text-muted">Current detection rate</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-body text-center">
+                <h5>Average Risk</h5>
+                <h2 id="average-risk">0%</h2>
+                <p class="text-muted">Mean risk score</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Transaction Stream -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5><i class="fas fa-stream"></i> Live Transaction Stream</h5>
+                <div>
+                    <button class="btn btn-sm btn-primary" onclick="loadMonitoringData()">
+                        <i class="fas fa-sync"></i> Refresh
+                    </button>
+                </div>
+            </div>
+            <div class="card-body">
+                <div id="transaction-stream"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Charts -->
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header">
+                <h5><i class="fas fa-chart-area"></i> Transaction Timeline</h5>
+            </div>
+            <div class="card-body">
+                <div id="timeline-chart"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    async function loadMonitoringData() {
+        try {
+            const response = await fetch('/api/proxy/transactions?limit=100');
+            const data = await response.json();
+            const transactions = data.transactions || [];
+
+            displayTransactionStream(transactions);
+            updateMetrics(transactions);
+            createTimelineChart(transactions);
+
+        } catch (error) {
+            console.error('Error loading monitoring data:', error);
+            showError('transaction-stream', 'Could not load monitoring data.');
+        }
+    }
+
+    function displayTransactionStream(transactions) {
+        const container = document.getElementById('transaction-stream');
+
+        if (!transactions || transactions.length === 0) {
+            container.innerHTML = '<div class="alert alert-info">No recent transactions available.</div>';
+            return;
+        }
+
+        let html = '<div class="table-responsive"><table class="table table-sm table-hover">';
+        html += `<thead>
+            <tr>
+                <th>Time</th>
+                <th>Transaction ID</th>
+                <th>Amount</th>
+                <th>Location</th>
+                <th>Risk Score</th>
+                <th>Status</th>
+            </tr>
+        </thead><tbody>`;
+
+        transactions.slice(0, 20).forEach(txn => {
+            const riskClass = txn.risk_score >= 0.7 ? 'danger' : (txn.risk_score >= 0.5 ? 'warning' : 'success');
+            const statusBadge = txn.is_fraud ?
+                '<span class="badge bg-danger"><i class="fas fa-exclamation-circle"></i> FRAUD</span>' :
+                '<span class="badge bg-success"><i class="fas fa-check-circle"></i> SAFE</span>';
+
+            html += `<tr>
+                <td>${new Date(txn.timestamp).toLocaleTimeString()}</td>
+                <td><code class="small">${txn.transaction_id.substring(0, 15)}...</code></td>
+                <td>${formatCurrency(txn.amount)}</td>
+                <td>${txn.merchant_city || 'N/A'}, ${txn.merchant_state || 'N/A'}</td>
+                <td><span class="badge bg-${riskClass}">${(txn.risk_score * 100).toFixed(1)}%</span></td>
+                <td>${statusBadge}</td>
+            </tr>`;
+        });
+
+        html += '</tbody></table></div>';
+        container.innerHTML = html;
+    }
+
+    function updateMetrics(transactions) {
+        document.getElementById('transaction-count').textContent = transactions.length;
+
+        const fraudCount = transactions.filter(t => t.is_fraud).length;
+        const fraudRate = transactions.length > 0 ? (fraudCount / transactions.length * 100) : 0;
+        document.getElementById('current-fraud-rate').textContent = fraudRate.toFixed(2) + '%';
+
+        const avgRisk = transactions.length > 0 ?
+            transactions.reduce((sum, t) => sum + t.risk_score, 0) / transactions.length * 100 : 0;
+        document.getElementById('average-risk').textContent = avgRisk.toFixed(2) + '%';
+    }
+
+    function createTimelineChart(transactions) {
+        if (!transactions || transactions.length === 0) {
+            document.getElementById('timeline-chart').innerHTML = '<div class="alert alert-info">No data available for timeline chart.</div>';
+            return;
+        }
+
+        // Sort by timestamp
+        transactions.sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
+
+        const legitimateTransactions = transactions.filter(t => !t.is_fraud);
+        const fraudTransactions = transactions.filter(t => t.is_fraud);
+
+        const chartData = [
+            {
+                x: legitimateTransactions.map(t => new Date(t.timestamp)),
+                y: legitimateTransactions.map(t => t.risk_score * 100),
+                mode: 'markers',
+                type: 'scatter',
+                name: 'Legitimate',
+                marker: {
+                    color: '#28a745',
+                    size: 8
+                }
+            },
+            {
+                x: fraudTransactions.map(t => new Date(t.timestamp)),
+                y: fraudTransactions.map(t => t.risk_score * 100),
+                mode: 'markers',
+                type: 'scatter',
+                name: 'Fraud',
+                marker: {
+                    color: '#dc3545',
+                    size: 10,
+                    symbol: 'x'
+                }
+            }
+        ];
+
+        const layout = {
+            title: 'Transaction Risk Scores Over Time',
+            xaxis: { title: 'Timestamp' },
+            yaxis: { title: 'Risk Score (%)', range: [0, 100] },
+            height: 400,
+            hovermode: 'closest',
+            shapes: [
+                {
+                    type: 'line',
+                    x0: transactions[0].timestamp,
+                    x1: transactions[transactions.length - 1].timestamp,
+                    y0: 70,
+                    y1: 70,
+                    line: {
+                        color: 'red',
+                        width: 2,
+                        dash: 'dash'
+                    }
+                }
+            ]
+        };
+
+        Plotly.newPlot('timeline-chart', chartData, layout);
+    }
+
+    // Load data on page load
+    document.addEventListener('DOMContentLoaded', loadMonitoringData);
+
+    // Auto-refresh every 15 seconds
+    setInterval(loadMonitoringData, 15000);
+</script>
+{% endblock %}

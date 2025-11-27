@@ -1,0 +1,241 @@
+{% extends "base.html" %}
+
+{% block title %}Predict - FraudGuard{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <h1 class="mb-4"><i class="fas fa-brain"></i> Fraud Prediction</h1>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h5><i class="fas fa-edit"></i> Transaction Details</h5>
+            </div>
+            <div class="card-body">
+                <form id="prediction-form">
+                    <div class="mb-3">
+                        <label class="form-label">Amount ($)</label>
+                        <input type="number" class="form-control" id="amount" step="0.01" required placeholder="100.00">
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Merchant State</label>
+                        <select class="form-select" id="merchant-state">
+                            <option value="CA">California (CA)</option>
+                            <option value="NY">New York (NY)</option>
+                            <option value="TX">Texas (TX)</option>
+                            <option value="FL">Florida (FL)</option>
+                            <option value="IL">Illinois (IL)</option>
+                            <option value="NV">Nevada (NV)</option>
+                            <option value="DE">Delaware (DE)</option>
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Merchant City</label>
+                        <input type="text" class="form-control" id="merchant-city" placeholder="San Francisco">
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">MCC (Merchant Category Code)</label>
+                        <select class="form-select" id="mcc">
+                            <option value="5411">Grocery Stores (5411)</option>
+                            <option value="5541">Gas Stations (5541)</option>
+                            <option value="5812">Restaurants (5812)</option>
+                            <option value="5944">Jewelry Stores (5944)</option>
+                            <option value="5999">Retail (5999)</option>
+                            <option value="7995">Gambling (7995)</option>
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Transaction Type</label>
+                        <select class="form-select" id="use-chip">
+                            <option value="Chip Transaction">Chip Transaction</option>
+                            <option value="Swipe Transaction">Swipe Transaction</option>
+                            <option value="Online Transaction">Online Transaction</option>
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">User ID (Optional)</label>
+                        <input type="number" class="form-control" id="user-id" placeholder="1234">
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Card ID (Optional)</label>
+                        <input type="number" class="form-control" id="card-id" placeholder="5678">
+                    </div>
+
+                    <button type="submit" class="btn btn-primary btn-lg w-100">
+                        <i class="fas fa-check"></i> Analyze Transaction
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6">
+        <div class="card" id="result-card" style="display: none;">
+            <div class="card-header">
+                <h5><i class="fas fa-chart-pie"></i> Prediction Result</h5>
+            </div>
+            <div class="card-body">
+                <div id="prediction-result"></div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <h5><i class="fas fa-info-circle"></i> Quick Test Scenarios</h5>
+            </div>
+            <div class="card-body">
+                <p class="text-muted">Try these test scenarios:</p>
+                <button class="btn btn-sm btn-outline-success mb-2 w-100" onclick="loadScenario('low')">
+                    <i class="fas fa-check-circle"></i> Low Risk Transaction
+                </button>
+                <button class="btn btn-sm btn-outline-warning mb-2 w-100" onclick="loadScenario('medium')">
+                    <i class="fas fa-exclamation-triangle"></i> Medium Risk Transaction
+                </button>
+                <button class="btn btn-sm btn-outline-danger mb-2 w-100" onclick="loadScenario('high')">
+                    <i class="fas fa-times-circle"></i> High Risk Transaction
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.getElementById('prediction-form').addEventListener('submit', async function(e) {
+        e.preventDefault();
+
+        const transactionData = {
+            "Amount": parseFloat(document.getElementById('amount').value),
+            "Merchant State": document.getElementById('merchant-state').value,
+            "Merchant City": document.getElementById('merchant-city').value,
+            "MCC": parseInt(document.getElementById('mcc').value),
+            "Use Chip": document.getElementById('use-chip').value
+        };
+
+        if (document.getElementById('user-id').value) {
+            transactionData["User"] = parseInt(document.getElementById('user-id').value);
+        }
+        if (document.getElementById('card-id').value) {
+            transactionData["Card"] = parseInt(document.getElementById('card-id').value);
+        }
+
+        try {
+            const response = await fetch('/api/proxy/predict', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(transactionData)
+            });
+
+            const result = await response.json();
+            displayResult(result);
+
+        } catch (error) {
+            console.error('Prediction error:', error);
+            alert('Error making prediction. Please ensure the API is running.');
+        }
+    });
+
+    function displayResult(result) {
+        const resultCard = document.getElementById('result-card');
+        const resultContainer = document.getElementById('prediction-result');
+
+        const fraudClass = result.is_fraud ? 'danger' : 'success';
+        const fraudIcon = result.is_fraud ? 'fa-exclamation-circle' : 'fa-check-circle';
+        const fraudText = result.is_fraud ? 'FRAUD DETECTED' : 'TRANSACTION SAFE';
+
+        let html = `
+            <div class="alert alert-${fraudClass} text-center">
+                <h3><i class="fas ${fraudIcon}"></i> ${fraudText}</h3>
+            </div>
+
+            <div class="row mb-3">
+                <div class="col-12">
+                    <h5>Fraud Probability</h5>
+                    <div class="progress" style="height: 30px;">
+                        <div class="progress-bar bg-${fraudClass}" style="width: ${result.fraud_probability * 100}%">
+                            ${(result.fraud_probability * 100).toFixed(2)}%
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <table class="table table-bordered">
+                <tr>
+                    <th>Transaction ID</th>
+                    <td><code>${result.transaction_id}</code></td>
+                </tr>
+                <tr>
+                    <th>Amount</th>
+                    <td>${formatCurrency(result.amount)}</td>
+                </tr>
+                <tr>
+                    <th>Risk Level</th>
+                    <td><span class="badge bg-${fraudClass}">${result.risk_level.toUpperCase()}</span></td>
+                </tr>
+                <tr>
+                    <th>Risk Score</th>
+                    <td>${result.risk_score.toFixed(2)}/100</td>
+                </tr>
+                <tr>
+                    <th>Processed At</th>
+                    <td>${new Date(result.processed_at).toLocaleString()}</td>
+                </tr>
+            </table>
+
+            <div class="alert alert-info">
+                <strong><i class="fas fa-lightbulb"></i> Recommendation:</strong><br>
+                ${result.recommendation}
+            </div>
+        `;
+
+        resultContainer.innerHTML = html;
+        resultCard.style.display = 'block';
+        resultCard.scrollIntoView({ behavior: 'smooth' });
+    }
+
+    function loadScenario(risk) {
+        const scenarios = {
+            low: {
+                amount: 45.50,
+                state: 'CA',
+                city: 'San Francisco',
+                mcc: 5411,
+                useChip: 'Chip Transaction'
+            },
+            medium: {
+                amount: 250.00,
+                state: 'NV',
+                city: 'Las Vegas',
+                mcc: 7995,
+                useChip: 'Online Transaction'
+            },
+            high: {
+                amount: 2500.00,
+                state: 'FL',
+                city: 'Miami',
+                mcc: 5944,
+                useChip: 'Online Transaction'
+            }
+        };
+
+        const scenario = scenarios[risk];
+        document.getElementById('amount').value = scenario.amount;
+        document.getElementById('merchant-state').value = scenario.state;
+        document.getElementById('merchant-city').value = scenario.city;
+        document.getElementById('mcc').value = scenario.mcc;
+        document.getElementById('use-chip').value = scenario.useChip;
+    }
+</script>
+{% endblock %}
