@@ -34,6 +34,21 @@ app.logger.addHandler(file_handler)
 app.logger.setLevel(logging.INFO)
 app.logger.info('Fraud Detection API startup')
 
+# Pre-load model and preprocessor on startup
+try:
+    from app.model_loader import model_loader
+    from app.database import init_database
+
+    # Initialize database
+    init_database()
+
+    # Pre-load model and preprocessor to avoid cold start on first request
+    model_loader.load_model()
+    model_loader.load_preprocessor()
+    app.logger.info('Model and preprocessor pre-loaded successfully')
+except Exception as e:
+    app.logger.warning(f'Could not pre-load model: {e}. Model will be loaded on first request.')
+
 # Import routes after app initialization to avoid circular imports
 from app import routes, websocket_handlers
 
